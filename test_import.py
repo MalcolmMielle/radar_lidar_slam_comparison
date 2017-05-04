@@ -6,8 +6,16 @@ from kslamcomp import kslamcomp
 def main():
     # parse command line options
     d = kslamcomp.KSlamComp(1, 0)
-    d.read("data_files/data_test.txt")
+    d.read("data_files/shifted.txt")
+    print("Raw\n")
+    d.printraw()
+    
+    d.sort()
+    print("Sorted\n")
     d.print()
+    
+    
+    print("Displacement\n")
     
     displacement = d.computeDisplacementNode(1,1)
     print(displacement)
