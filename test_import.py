@@ -24,6 +24,8 @@ def main():
     displacement_full = d.compute()
     print("Full displacement")
     print(displacement_full)
+    
+    d.visu()
      
 
 if __name__ == "__main__":

@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 from kslamcomp import data
 import copy
+import matplotlib.pyplot as plt
 
 class KSlamComp:
 	def __init__(self, forward_nodes_lookup = 1, backward_nodes_lookup = 0, slam_input_raw = None, gt_input_raw = None):
@@ -75,6 +76,14 @@ class KSlamComp:
 			displacement = displacement + self.computeDisplacementNode(x, x)
 		return displacement
 	
+	def visu(self):
+		plt.figure(1)
+		self.slam.visu(plt)
+		plt.title("slam")
+		plt.figure(2)
+		self.gt.visu(plt)
+		plt.title("gt")
+		plt.show()
 	
 	#Protected functions
 	

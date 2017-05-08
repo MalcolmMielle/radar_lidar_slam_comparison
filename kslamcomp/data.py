@@ -62,3 +62,14 @@ class Data:
 		while diff > 2 * math.pi :
 			diff = diff - (2 * math.pi)
 		return diff
+	
+	def visu(self, plot):
+		pose_x = list()
+		pose_y = list()
+		size1 = list()
+		for el in self.posetime:
+			pose = el[0]
+			pose_x.append(pose.getPosition().x)
+			pose_y.append(pose.getPosition().y)
+			size1.append(500)
+		plot.scatter(pose_x, pose_y, size1, 'r')
