@@ -3,6 +3,7 @@
 from kslamcomp import data
 import copy
 import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 
 class KSlamComp:
 	def __init__(self, forward_nodes_lookup = 1, backward_nodes_lookup = 0, slam_input_raw = None, gt_input_raw = None):
@@ -39,12 +40,15 @@ class KSlamComp:
 	
 	def print(self):
 		print("Printing data")
+		print("SLAM")
 		for x in range(0, len(self.slam.posetime)):
 			print(str(self.slam.posetime[x][0].getPosition().x) + " " \
 				+ str(self.slam.posetime[x][0].getPosition().y) + " " \
 				+ str(self.slam.posetime[x][0].getOrientation()) + " " \
-				+ str(self.slam.posetime[x][1]) + " " + \
-				  str(self.gt.posetime[x][0].getPosition().x) + " " \
+				+ str(self.slam.posetime[x][1]))
+		print("GT")
+		for x in range(0, len(self.gt.posetime)):
+			print(str(self.gt.posetime[x][0].getPosition().x) + " " \
 				+ str(self.gt.posetime[x][0].getPosition().y) + " " \
 				+ str(self.gt.posetime[x][0].getOrientation()) + " " \
 				+ str(self.gt.posetime[x][1]))
@@ -52,55 +56,103 @@ class KSlamComp:
 			
 	def printraw(self):
 		print("Printing Raw data")
+		print("SLAM Raw")
 		for x in range(0, len(self.slam_raw.posetime)):
 			print(str(self.slam_raw.posetime[x][0].getPosition().x) + " " \
 				+ str(self.slam_raw.posetime[x][0].getPosition().y) + " " \
 				+ str(self.slam_raw.posetime[x][0].getOrientation()) + " " \
-				+ str(self.slam_raw.posetime[x][1]) + " " + \
-				  str(self.gt_raw.posetime[x][0].getPosition().x) + " " \
+				+ str(self.slam_raw.posetime[x][1]))
+		print("GT Raw")
+		for x in range(0, len(self.gt_raw.posetime)):
+			print(str(self.gt_raw.posetime[x][0].getPosition().x) + " " \
 				+ str(self.gt_raw.posetime[x][0].getPosition().y) + " " \
 				+ str(self.gt_raw.posetime[x][0].getOrientation()) + " " \
 				+ str(self.gt_raw.posetime[x][1]))
 		print("\n")
 	
+	def getSLAMsize(self):
+		return len(self.slam.posetime)
 
-	def compute(self):
+	def compute(self, nb_of_pose = -1):
 		"""
-		Compute the total error in the SLAM
+		Compute the total error in the SLAM. Don't forget to call sort before
 		"""
-		
-		self.sort()
 		
 		displacement = 0
-		for x in range(0, len(self.slam.posetime)):
+		#print(len(self.slam.posetime))
+		if nb_of_pose > len(self.slam.posetime) or nb_of_pose < 0:
+			nb_of_pose = len(self.slam.posetime)
+		for x in range(0, nb_of_pose):
 			displacement = displacement + self.computeDisplacementNode(x, x)
 		return displacement
 	
-	def visu(self):
+	def visu(self, nb_of_pose = -1):
+		if nb_of_pose > len(self.slam.posetime) or nb_of_pose < 0:
+			nb_of_pose = len(self.slam.posetime)
 		plt.figure(1)
-		self.slam.visu(plt)
+		self.slam.visu(plt, nb_of_pose)
 		plt.title("slam")
 		plt.figure(2)
-		self.gt.visu(plt)
+		self.gt.visu(plt, nb_of_pose)
 		plt.title("gt")
-		plt.show()
+		
+		#plt.figure(3)
+		#self.slam_raw.visu(plt, nb_of_pose)
+		#plt.title("slam raw")
+		#plt.figure(4)
+		#self.gt_raw.visu(plt, nb_of_pose)
+		#plt.title("gtraw")
+		plt.show(block=False)
 	
 	#Protected functions
 	
-	def sort(self):
+	def sort(self, delta = 0):
 		self.slam.posetime = []
 		self.gt.posetime = []
+		
+		seen = list()
+		
 		for element in self.slam_raw.posetime:
 			#print("new element " + element[0].print() + " time " + str(element[1]))
-			
-			gt_tmp = copy.copy(self.gt_raw.posetime[0])
+			toadd = list()
 			for el_gt in self.gt_raw.posetime:
 				#print("checking" + str(element[1]) + " "+ str(el_gt[1]))
-				if element[1] == el_gt[1]:
-					gt_tmp = el_gt
-					self.slam.posetime.append(element)
-					self.gt.posetime.append(gt_tmp)
+				if element[1] <= el_gt[1] + delta and element[1] >= el_gt[1] - delta:
+					seen_b = False
+					for times in seen:
+						if(el_gt[1] == times):
+							seen_b = True
+					if(seen_b == False):
+						#Keep the one with the closest time
+						if len(toadd) == 2:
+							if abs(toadd[1][1] - element[1]) > abs(el_gt[1] - element[1]):
+								toadd = []
+								toadd.append(element)
+								toadd.append(el_gt)
+						else:
+							toadd = []
+							toadd.append(element)
+							toadd.append(el_gt)
+			if len(toadd) == 2:
+				seen.append(toadd[1][1])
+				self.slam.posetime.append(toadd[0])
+				self.gt.posetime.append(toadd[1])
 		assert len(self.slam.posetime) == len(self.gt.posetime)
+		
+		for x in range(0, len(self.slam.posetime)):
+			for x2 in range(x + 1, len(self.slam.posetime)):
+				if self.slam.posetime[x][1] == self.slam.posetime[x2][1]:
+					print("Repeating SLAM value")
+					return False
+					
+		for x in range(0, len(self.gt.posetime)):
+			for x2 in range(x + 1, len(self.gt.posetime)):
+				if self.gt.posetime[x][1] == self.gt.posetime[x2][1]:
+					print("Repeating GT value")
+					return False
+		
+		return True
+		
 	
 	
 	def computeDisplacementNode(self, i_slam, i_gt):

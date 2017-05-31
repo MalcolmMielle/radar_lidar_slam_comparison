@@ -63,13 +63,42 @@ class Data:
 			diff = diff - (2 * math.pi)
 		return diff
 	
-	def visu(self, plot):
+	def visu(self, plot, nb_of_pose = -1):
 		pose_x = list()
 		pose_y = list()
 		size1 = list()
-		for el in self.posetime:
-			pose = el[0]
+		if nb_of_pose > len(self.posetime) or nb_of_pose < 0:
+			nb_of_pose = len(self.posetime)
+		for x in range(0, nb_of_pose):
+		#for el in self.posetime:
+			pose = self.posetime[x][0]
 			pose_x.append(pose.getPosition().x)
 			pose_y.append(pose.getPosition().y)
 			size1.append(500)
 		plot.scatter(pose_x, pose_y, size1, 'r')
+		#maxmin = self.__maxXYminXY()
+		#plot.xlim(-4.0, 4.0)
+		#plot.xlim(maxmin[2], maxmin[0])
+		#plot.ylim(maxmin[3], maxmin[1])
+
+	def __maxXYminXY(self):
+		if(len(self.posetime) > 0):
+			max_x = self.posetime[0][0].getPosition().x 
+			max_y = self.posetime[0][0].getPosition().y
+			min_x = self.posetime[0][0].getPosition().x 
+			min_y = self.posetime[0][0].getPosition().y 
+			for el in self.posetime:
+				if(max_x < el[0].getPosition().x):
+					max_x = el[0].getPosition().x
+				if(max_y < el[0].getPosition().y):
+					max_y = el[0].getPosition().y
+				if(min_x > el[0].getPosition().x):
+					min_x = el[0].getPosition().x
+				if(min_y > el[0].getPosition().y):
+					min_y = el[0].getPosition().y
+			return (max_x, max_y, min_x, min_y)
+		else:
+			print("EMPTY")
+			return (1,1,-1,-1)
+	
+	
