@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from kslamcomp import kslamcomp
+from kslamcomp import kslamcomp_logger
 
 def main():
     # parse command line options
@@ -26,6 +27,12 @@ def main():
     print(displacement_full)
     
     d.visu()
+    
+    
+    d_logger = kslamcomp_logger.KSlamComp_logger("slam.gpl", 1, 0)
+    d_logger.read("data_files/shifted.txt")
+    d_logger.sort()
+    displacement_full = d_logger.compute()
      
 
 if __name__ == "__main__":
