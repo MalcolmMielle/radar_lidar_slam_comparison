@@ -6,8 +6,8 @@ from kslamcomp import kslamcomp
 def main():
     # parse command line options
     d = kslamcomp.KSlamComp(1, 0)
-    d.readSLAM("data_files/log_fuser_graph_offline_mpr.txt")
-    d.readGT("data_files/log_fuser_graph_offline_laser.txt")
+    d.readSLAM("data_files/log_fuser_pointcloud_offline_2017-08-29-15-30-59.txt")
+    d.readGT(  "data_files/log_fuser_vmc_2017-08-29-15-30-59.txt")
     print("Raw\n")
     d.printraw()
     #d.visu()
@@ -17,7 +17,7 @@ def main():
     print("Sorted\n")
     d.print()
     
-    #d.visu()
+    d.visu()
     
     
     print("Displacement\n")
@@ -29,13 +29,17 @@ def main():
     d.print()
     
     for x in range(0, d.getSLAMsize()):
-        displacement_full = d.compute(x)
+        displacement_full = d.compute(x, False)
         print("Full displacement at step " + str(x))
         print(displacement_full)
         #d.visu(x)
         #input("Press Enter to continue...")
     
     #d.visu()
+    d.printDisplacement()
+    d.visuDisplacement()
+    
+    d.exportGnuplot("displacement.dat")
      
 
 if __name__ == "__main__":

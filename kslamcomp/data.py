@@ -41,6 +41,14 @@ class Data:
 			assert len(line.split()) == 4
 			slampose = Pose(Point( float(line.split()[0]), float(line.split()[1] )),  float(line.split()[2]))
 			self.posetime.append( (slampose, float(line.split()[3]) ) )
+			
+	def exportGnuplot(self, f):
+		print("El number " + str(len(self.posetime)))
+		for el in self.posetime:
+			
+			#print(str(el[0].position.x) + " " + str(el[0].position.y) + " " + str(el[0].orientation) + " " + str(el[1]) + "\n")
+			
+			f.write(str(el[0].position.x) + " " + str(el[0].position.y) + " " + str(el[0].orientation) + " " + str(el[1]) + "\n")
 	
 	def getPose(self, i):
 		return self.posetime[i][0]
@@ -63,7 +71,7 @@ class Data:
 			diff = diff - (2 * math.pi)
 		return diff
 	
-	def visu(self, plot, nb_of_pose = -1):
+	def visu(self, plot, nb_of_pose = -1, color = 'r'):
 		pose_x = list()
 		pose_y = list()
 		size1 = list()
@@ -75,7 +83,7 @@ class Data:
 			pose_x.append(pose.getPosition().x)
 			pose_y.append(pose.getPosition().y)
 			size1.append(500)
-		plot.scatter(pose_x, pose_y, size1, 'r')
+		plot.scatter(pose_x, pose_y, size1, color)
 		#maxmin = self.__maxXYminXY()
 		#plot.xlim(-4.0, 4.0)
 		#plot.xlim(maxmin[2], maxmin[0])
