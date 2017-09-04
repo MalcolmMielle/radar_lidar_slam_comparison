@@ -6,8 +6,12 @@ from kslamcomp import kslamcomp
 def main():
     # parse command line options
     d = kslamcomp.KSlamComp(1, 0)
-    d.readSLAM("data_files/log_fuser_pointcloud_offline_2017-08-29-15-30-59.txt")
-    d.readGT(  "data_files/log_fuser_vmc_2017-08-29-15-30-59.txt")
+    #d.readSLAM("data_files/log_fuser_pointcloud_offline_people_long.txt")
+    #d.readSLAM("data_files/log_fuser_mpr_offline_2017-08-29-15-30-59.txt")
+    d.readSLAM("data_files/log_fuser_mpr_offline_2017-08-29-15-37-08.txt")
+    #d.readGT("data_files/log_fuser_vmc_people_long.txt")
+    #d.readGT("data_files/log_fuser_vmc_2017-08-29-15-30-59.txt")
+    d.readGT("data_files/log_fuser_vmc_2017-08-29-15-37-08.txt")
     print("Raw\n")
     d.printraw()
     #d.visu()
