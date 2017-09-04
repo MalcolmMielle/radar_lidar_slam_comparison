@@ -280,4 +280,3 @@ class KSlamComp:
 		#print(nb_relative_relation)
 		
 		return displacement/nb_relative_relation
-	
