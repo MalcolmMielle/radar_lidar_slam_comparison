@@ -113,17 +113,41 @@ class KSlamComp:
 			sum = sum + el
 			f.write(str(count) + " " + str(el)+ " " + str(sum) + "\n")
 			count = count + 1
-
-	
-	def visu(self, nb_of_pose = -1, block = False):
+			
+	def visuSLAM(self, nb_of_pose = -1, block = False):
 		if nb_of_pose > len(self.slam.posetime) or nb_of_pose < 0:
 			nb_of_pose = len(self.slam.posetime)
 		plt.figure(1)
 		self.slam.visu(plt, nb_of_pose)
 		plt.title("slam")
+		
+	def visuSLAMRaw(self, nb_of_pose = -1, block = False):
+		print("print raw")
+		if nb_of_pose > len(self.slam_raw.posetime) or nb_of_pose < 0:
+			nb_of_pose = len(self.slam_raw.posetime)
+		plt.figure(1)
+		self.slam_raw.visu(plt, nb_of_pose)
+		plt.title("slam")
+	
+	def visuGT(self, nb_of_pose = -1, block = False):
+		if nb_of_pose > len(self.gt.posetime) or nb_of_pose < 0:
+			nb_of_pose = len(self.gt.posetime)
 		#plt.figure(2)
 		self.gt.visu(plt, nb_of_pose, 'b')
 		plt.title("gt")
+
+	
+	def visu(self, nb_of_pose = -1, block = False):
+		self.visuSLAM(nb_of_pose, block)
+		self.visuGT(nb_of_pose, block)
+		#if nb_of_pose > len(self.slam.posetime) or nb_of_pose < 0:
+			#nb_of_pose = len(self.slam.posetime)
+		#plt.figure(1)
+		#self.slam.visu(plt, nb_of_pose)
+		#plt.title("slam")
+		##plt.figure(2)
+		#self.gt.visu(plt, nb_of_pose, 'b')
+		#plt.title("gt")
 		
 		
 		#plt.figure(3)
