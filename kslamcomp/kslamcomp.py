@@ -247,11 +247,11 @@ class KSlamComp:
 			if squared == True :
 				transnoise = (transdist_gt - transdist_slam) * (transdist_gt - transdist_slam)
 			else :
-				transnoise = abs(transdist_gt - transdist_slam)
+				transnoise = transdist_gt - transdist_slam
 			
 			#print("trans noise " + str(transnoise))
 			
-			#displacement = displacement + transnoise
+			displacement = displacement + transnoise
 			
 			#Rot displacement
 			oriendist_slam = self.slam.getOrientationDisplacement(i_slam, node_forward_slam)
@@ -260,9 +260,9 @@ class KSlamComp:
 			if squared == True :
 				orientnoise = (oriendist_slam - oriendist_gt) * (oriendist_slam - oriendist_gt)
 			else :
-				orientnoise = abs(oriendist_slam - oriendist_gt)
+				orientnoise = oriendist_slam - oriendist_gt
 				
-			displacement = displacement + orientnoise
+			#displacement = displacement + orientnoise
 			
 			node_forward_gt = node_forward_gt + 1
 			node_forward_slam = node_forward_slam + 1
@@ -280,11 +280,11 @@ class KSlamComp:
 			if squared == True :
 				transnoise = (transdist_gt - transdist_slam) * (transdist_gt - transdist_slam)
 			else :
-				transnoise = abs(transdist_gt - transdist_slam)
+				transnoise = transdist_gt - transdist_slam
 				
 			#print("trans noise " + str(transnoise))
 			
-			#displacement = displacement + transnoise
+			displacement = displacement + transnoise
 			
 			#Rot displacement
 			oriendist_slam = self.slam.getOrientationDisplacement(i_slam, node_backward_slam)
@@ -292,9 +292,9 @@ class KSlamComp:
 			if squared == True :
 				orientnoise = (oriendist_slam - oriendist_gt) * (oriendist_slam - oriendist_gt)
 			else :
-				orientnoise = abs(oriendist_slam - oriendist_gt)
+				orientnoise = oriendist_slam - oriendist_gt
 			 
-			displacement = displacement + orientnoise
+			#displacement = displacement + orientnoise
 
 			node_backward_gt = node_backward_gt - 1
 			node_backward_slam = node_backward_slam - 1
