@@ -8,10 +8,10 @@ def main():
     d = kslamcomp.KSlamComp(1, 0)
     #d.readSLAM("data_files/log_fuser_pointcloud_offline_people_long.txt")
     #d.readSLAM("data_files/log_fuser_mpr_offline_2017-08-29-15-30-59.txt")
-    d.readSLAM("data_files/gmapping_laser_basement.txt")
+    d.readSLAM("data_files/GMapping/gmapping_laser_2017-08-29-15-30-59.txt")
     #d.readGT("data_files/log_fuser_vmc_people_long.txt")
-    #d.readGT("data_files/log_fuser_vmc_2017-08-29-15-30-59.txt")
-    d.readGT("data_files/log_fuser_vmc_2017-08-29-15-37-08.txt")
+    d.readGT("data_files/log_fuser_vmc_2017-08-29-15-30-59.txt")
+    #d.readGT("data_files/log_fuser_vmc_2017-08-29-15-37-08.txt")
     print("Raw\n")
     d.printraw()
     #d.visu()
@@ -39,7 +39,7 @@ def main():
         #d.visu(x)
         #input("Press Enter to continue...")
     
-    #d.visu()
+    d.visu()
     d.printDisplacement()
     d.visuDisplacement()
     

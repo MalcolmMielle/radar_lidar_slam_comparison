@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 def main():
     # parse command line options
     d = kslamcomp.KSlamComp(1, 0)
-    d.readSLAM("data_files/gmapping_laser_basement.txt")
+    d.readSLAM("data_files/GMapping/gmapping_test.txt")
     print("Raw\n")
     d.printraw()
     
