@@ -8,33 +8,68 @@ from kslamcomp import gnuplot_reader
 from kslamcomp import kslamcomp
 from kslamcomp import data
 
-class GnuplotReducer():
-    def __init__(self, file_base, file_toupdate):
-        self.reader_base
-        self.reader_toupdate
-        self.reader_base.read(file_base)
-        self.reader_toupdate.read(file_toupdate)
-        
-        self.base 
-        self.toupdate
-        
-        #SlamData()
-        #GTData()
-        
-    #def SlamData(self):
-        #pass
-    
-    #def GTData(self):
-        #pass
-    
-    def sortSLAM(self, delta = 0):
-		self.base = []
-		self.toupdate = []
+class GnuplotReducer:
+	def __init__(self, file_base, file_toupdate):
+		self.reader_base = gnuplot_reader.GnuplotReader()
+		self.reader_toupdate = gnuplot_reader.GnuplotReader()
+		self.reader_base.read(file_base)
+		self.reader_toupdate.read(file_toupdate)
+
+		#self.base 
+		self.toupdate = data.Data()
+		self.displacement = list()
+		self.sum = list()
+		
+	def exportGnuplot(self, file_out):
+		f = open(file_out, 'w')
+		f.write("# SLAM - pose_x pose_y orientation time" + "\n")
+		self.toupdate.exportGnuplot(f)
+		f.write("# GT - pose_x pose_y orientation time" + "\n")
+		self.reader_toupdate.posetime_gt.exportGnuplot(f)
+		sum = 0
+		count = 0
+		for el in self.displacement:
+			sum = sum + el
+			f.write(str(count) + " " + str(el)+ " " + str(sum) + "\n")
+			count = count + 1
+
+	def print(self):
+		print("Reader base")
+		self.reader_base.print()
+		print("Reader to update")
+		self.reader_toupdate.print()
+	
+	def printReducedSLAM(self):
+		print("REDUCED SLAM")
+		self.toupdate.print()
+		print("DISPLACEMENT")
+		for i in range(len(self.displacement)):
+			print(i, " ", self.displacement[i], " ", self.sum[i])
+	#SlamData()
+	#GTData()
+
+	#def SlamData(self):
+	#pass
+
+	#def GTData(self):
+	#pass
+	def reduce(self, delta = 0):
+		indexes = self.reduceSLAM(delta)
+		
+		for el in indexes:
+			self.displacement.append(self.reader_toupdate.displacement[el])
+			self.sum.append(self.reader_toupdate.sum[el])
+	
+
+	def reduceSLAM(self, delta = 0):
+		#self.toupdate = []
+		
+		indexes = list()
 		
 		seen = list()
 		seen_slam = list() # to avoid double value when rounding the time in the result file
 		
-		for element in self.reader_base.posetime_slam:
+		for element in self.reader_base.posetime_slam.posetime:
 			#print("new element " + element[0].print() + " time " + str(element[1]))
 			seen_slam_time = any(slam_time == element[1] for slam_time in seen_slam)
 			#for slam_times in seen_slam:
@@ -42,7 +77,9 @@ class GnuplotReducer():
 					#seen_slam_time = True
 			if seen_slam_time == False:
 				toadd = list()
-				for el_gt in self.reader_toupdate.posetime_slam:
+				index = -1
+				count = 0
+				for el_gt in self.reader_toupdate.posetime_slam.posetime:
 					#print("checking" + str(element[1]) + " "+ str(el_gt[1]))
 					if element[1] <= el_gt[1] + delta and element[1] >= el_gt[1] - delta:
 						seen_b = False
@@ -56,27 +93,24 @@ class GnuplotReducer():
 									toadd = []
 									toadd.append(element)
 									toadd.append(el_gt)
+									index = count
 							else:
 								toadd = []
 								toadd.append(element)
 								toadd.append(el_gt)
+								index = count
+					count= count + 1
 				if len(toadd) == 2:
 					seen.append(toadd[1][1])
-					self.slam.append(toadd[1])
+					self.toupdate.posetime.append(toadd[1])
+					assert index != -1
+					indexes.append(index)
 				seen_slam.append(element[1])
-			
-		assert len(self.slam.posetime) == len(self.gt.posetime)
-		
-		for x in range(0, len(self.slam.posetime)):
-			for x2 in range(x + 1, len(self.slam.posetime)):
-				if self.slam.posetime[x][1] == self.slam.posetime[x2][1]:
-					print("Repeating SLAM value: ", x, " and ", x2, "with ", self.slam.posetime[x][1], " == ", self.slam.posetime[x2][1])
-					return False
 					
-		for x in range(0, len(self.gt.posetime)):
-			for x2 in range(x + 1, len(self.gt.posetime)):
-				if self.gt.posetime[x][1] == self.gt.posetime[x2][1]:
-					print("Repeating GT value")
+		for x in range(0, len(self.toupdate.posetime)):
+			for x2 in range(x + 1, len(self.toupdate.posetime)):
+				if self.toupdate.posetime[x][1] == self.toupdate.posetime[x2][1]:
+					print("Repeating SLAM value: ", x, " and ", x2, "with ", self.toupdate.posetime[x][1], " == ", self.toupdate.posetime[x2][1])
 					return False
 		
-		return True
+		return indexes

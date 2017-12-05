@@ -43,7 +43,7 @@ class Data:
 			self.posetime.append( (slampose, float(line.split()[3]) ) )
 			
 	def exportGnuplot(self, f):
-		print("El number " + str(len(self.posetime)))
+		#print("El number " + str(len(self.posetime)))
 		for el in self.posetime:
 			
 			#print(str(el[0].position.x) + " " + str(el[0].position.y) + " " + str(el[0].orientation) + " " + str(el[1]) + "\n")
@@ -108,5 +108,13 @@ class Data:
 		else:
 			print("EMPTY")
 			return (1,1,-1,-1)
+		
+	def print(self):
+		print("SLAM")
+		for x in range(0, len(self.posetime)):
+			print(str(self.posetime[x][0].getPosition().x) + " " \
+				+ str(self.posetime[x][0].getPosition().y) + " " \
+				+ str(self.posetime[x][0].getOrientation()) + " " \
+				+ str(self.posetime[x][1]))
 	
 	

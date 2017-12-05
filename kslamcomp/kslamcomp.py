@@ -4,6 +4,7 @@ from kslamcomp import data
 import copy
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+import math
 
 class KSlamComp:
 	def __init__(self, forward_nodes_lookup = 1, backward_nodes_lookup = 0, slam_input_raw = None, gt_input_raw = None):
@@ -14,6 +15,9 @@ class KSlamComp:
 		self.nb_node_forward = forward_nodes_lookup
 		self.nb_node_backward = backward_nodes_lookup
 		self.displacement_vec = list()
+		
+		self.use_orientation = False
+		self.use_translation = True
 	
 	def read(self, file_name):
 		assert(len(self.slam_raw.posetime) == 0)
@@ -42,17 +46,19 @@ class KSlamComp:
 	def print(self):
 		print("Printing data")
 		print("SLAM")
-		for x in range(0, len(self.slam.posetime)):
-			print(str(self.slam.posetime[x][0].getPosition().x) + " " \
-				+ str(self.slam.posetime[x][0].getPosition().y) + " " \
-				+ str(self.slam.posetime[x][0].getOrientation()) + " " \
-				+ str(self.slam.posetime[x][1]))
+		#self.slam.print()
+		#for x in range(0, len(self.slam.posetime)):
+			#print(str(self.slam.posetime[x][0].getPosition().x) + " " \
+				#+ str(self.slam.posetime[x][0].getPosition().y) + " " \
+				#+ str(self.slam.posetime[x][0].getOrientation()) + " " \
+				#+ str(self.slam.posetime[x][1]))
 		print("GT")
-		for x in range(0, len(self.gt.posetime)):
-			print(str(self.gt.posetime[x][0].getPosition().x) + " " \
-				+ str(self.gt.posetime[x][0].getPosition().y) + " " \
-				+ str(self.gt.posetime[x][0].getOrientation()) + " " \
-				+ str(self.gt.posetime[x][1]))
+		#self.gt.print()
+		#for x in range(0, len(self.gt.posetime)):
+			#print(str(self.gt.posetime[x][0].getPosition().x) + " " \
+				#+ str(self.gt.posetime[x][0].getPosition().y) + " " \
+				#+ str(self.gt.posetime[x][0].getOrientation()) + " " \
+				#+ str(self.gt.posetime[x][1]))
 		print("\n")
 			
 	def printraw(self):
@@ -92,8 +98,9 @@ class KSlamComp:
 		if nb_of_pose > len(self.slam.posetime) or nb_of_pose < 0:
 			nb_of_pose = len(self.slam.posetime)
 		for x in range(0, nb_of_pose):
+			#print(x, "of", nb_of_pose)
 			displacement_here = self.computeDisplacementNode(x, x, squared)
-			print(displacement)
+			#print(displacement)
 			displacement = displacement + displacement_here
 			self.displacement_vec.append(displacement_here)
 		return displacement
@@ -253,13 +260,13 @@ class KSlamComp:
 			transdist_gt = self.gt.getTransDisplacement(i_gt, node_forward_gt)
 			transnoise = 0
 			if squared == True :
-				transnoise = (transdist_gt - transdist_slam) * (transdist_gt - transdist_slam)
+				transnoise = math.sqrt( (transdist_gt - transdist_slam) * (transdist_gt - transdist_slam) )
 			else :
 				transnoise = transdist_gt - transdist_slam
 			
 			#print("trans noise " + str(transnoise))
-			
-			displacement = displacement + transnoise
+			if self.use_translation == True:
+				displacement = displacement + transnoise
 			
 			#Rot displacement
 			oriendist_slam = self.slam.getOrientationDisplacement(i_slam, node_forward_slam)
@@ -269,8 +276,9 @@ class KSlamComp:
 				orientnoise = (oriendist_slam - oriendist_gt) * (oriendist_slam - oriendist_gt)
 			else :
 				orientnoise = oriendist_slam - oriendist_gt
-				
-			#displacement = displacement + orientnoise
+			
+			if self.use_orientation == True:
+				displacement = displacement + orientnoise
 			
 			node_forward_gt = node_forward_gt + 1
 			node_forward_slam = node_forward_slam + 1
@@ -286,13 +294,14 @@ class KSlamComp:
 			transdist_gt = self.gt.getTransDisplacement(i_gt, node_backward_gt)
 			transnoise = 0
 			if squared == True :
-				transnoise = (transdist_gt - transdist_slam) * (transdist_gt - transdist_slam)
+				transnoise = math.sqrt( (transdist_gt - transdist_slam) * (transdist_gt - transdist_slam) )
 			else :
 				transnoise = transdist_gt - transdist_slam
 				
 			#print("trans noise " + str(transnoise))
 			
-			displacement = displacement + transnoise
+			if self.use_translation == True:
+				displacement = displacement + transnoise
 			
 			#Rot displacement
 			oriendist_slam = self.slam.getOrientationDisplacement(i_slam, node_backward_slam)
@@ -302,7 +311,8 @@ class KSlamComp:
 			else :
 				orientnoise = oriendist_slam - oriendist_gt
 			 
-			#displacement = displacement + orientnoise
+			if self.use_orientation == True:
+				displacement = displacement + orientnoise
 
 			node_backward_gt = node_backward_gt - 1
 			node_backward_slam = node_backward_slam - 1
@@ -311,4 +321,7 @@ class KSlamComp:
 		
 		#print(nb_relative_relation)
 		
-		return displacement/nb_relative_relation
+		if nb_relative_relation != 0:
+			return displacement/nb_relative_relation
+		## If nothing was calculated i.e. nb_relative_relation is 0, we return 0
+		return 0
