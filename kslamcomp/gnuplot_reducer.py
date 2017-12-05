@@ -24,10 +24,11 @@ class GnuplotReducer:
 		f = open(file_out, 'w')
 		f.write("# SLAM - pose_x pose_y orientation time" + "\n")
 		self.toupdate.exportGnuplot(f)
-		f.write("# GT - pose_x pose_y orientation time" + "\n")
+		f.write("\n\n# GT - pose_x pose_y orientation time" + "\n")
 		self.reader_toupdate.posetime_gt.exportGnuplot(f)
 		sum = 0
 		count = 0
+		f.write("\n\n# Displacement and sum" + "\n")
 		for el in self.displacement:
 			sum = sum + el
 			f.write(str(count) + " " + str(el)+ " " + str(sum) + "\n")
