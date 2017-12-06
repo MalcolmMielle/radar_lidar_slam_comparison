@@ -67,7 +67,7 @@ class Data:
 	def getTransDisplacement(self, i, j):
 		#print("position " + self.posetime[i][0].print() + " " + self.posetime[j][0].print())
 		dist = self.posetime[i][0].getPosition().dist( self.posetime[j][0].getPosition())
-		#print("dist " + str(dist))
+		#print("dist " , dist, "position ", self.posetime[i][0].print(), " ", self.posetime[j][0].print())
 		return dist
 	
 	#From i toward j
@@ -124,7 +124,6 @@ class Data:
 			return (1,1,-1,-1)
 		
 	def print(self):
-		print("SLAM")
 		for x in range(0, len(self.posetime)):
 			print(str(self.posetime[x][0].getPosition().x) + " " \
 				+ str(self.posetime[x][0].getPosition().y) + " " \

@@ -24,12 +24,12 @@ def main():
 	names.append(Pair("data_files/log_fuser_mpr_offline_2017-08-29-15-30-59.txt", "data_files/log_fuser_vmc_2017-08-29-15-30-59.txt", "results/displacement_fuser_mpr_position_offline_2017-08-29-15-30-59.dat", "results/displacement_fuser_mpr_orientation_offline_2017-08-29-15-30-59.dat"))
 	names.append(Pair("data_files/log_fuser_mpr_offline_2017-08-29-15-37-08.txt", "data_files/log_fuser_vmc_2017-08-29-15-37-08.txt", "results/displacement_fuser_mpr_position_offline_2017-08-29-15-37-08.dat", "results/displacement_fuser_mpr_orientation_offline_2017-08-29-15-37-08.dat"))
 	
-	####Gmapping laser scan
+	###Gmapping laser scan
 	names.append(Pair("data_files/GMapping/gmapping_laser_people_long.txt", "data_files/log_fuser_vmc_people_long.txt", "results/displacement_gmapping_laser_position_people_long.dat", "results/displacement_gmapping_laser_orientation_people_long.dat", False))
 	names.append(Pair("data_files/GMapping/gmapping_laser_2017-08-29-15-30-59.txt", "data_files/log_fuser_vmc_2017-08-29-15-30-59.txt", "results/displacement_gmapping_laser_position_2017-08-29-15-30-59.dat", "results/displacement_gmapping_laser_orientation_2017-08-29-15-30-59.dat", False))
 	names.append(Pair("data_files/GMapping/gmapping_laser_2017-08-29-15-37-08.txt", "data_files/log_fuser_vmc_2017-08-29-15-37-08.txt", "results/displacement_gmapping_laser_position_2017-08-29-15-37-08.dat", "results/displacement_gmapping_laser_orientation_2017-08-29-15-37-08.dat", False))
 	
-	####Gmapping mpr
+	###Gmapping mpr
 	names.append(Pair("data_files/GMapping/gmapping_mpr_people_long.txt", "data_files/log_fuser_vmc_people_long.txt", "displacement_gmapping_mpr_position_people_long.dat", "results/displacement_gmapping_mpr_orientation_people_long.dat", False))
 	names.append(Pair("data_files/GMapping/gmapping_mpr_2017-08-29-15-30-59.txt", "data_files/log_fuser_vmc_2017-08-29-15-30-59.txt", "results/displacement_gmapping_mpr_position_2017-08-29-15-30-59.dat", "results/displacement_gmapping_mpr_orientation_2017-08-29-15-30-59.dat", False))
 	names.append(Pair("data_files/GMapping/gmapping_mpr_2017-08-29-15-37-08.txt", "data_files/log_fuser_vmc_2017-08-29-15-37-08.txt", "results/displacement_gmapping_mpr_position_2017-08-29-15-37-08.dat", "results/displacement_gmapping_mpr_orientation_2017-08-29-15-37-08.dat", False))
@@ -70,7 +70,7 @@ def main():
 			
 			#d.print()
 			if use_position:
-				d.compute(-1, True)
+				d.compute(-1, False)
 			else:
 				d.compute(-1, False)
 			
@@ -90,7 +90,7 @@ def main():
 			else:
 				d.exportGnuplot(el.file_out_orientation)
      
-     ##Reduce values of gmapping now
+     #Reduce values of gmapping now
      
 	gmapping_files = list()
 	

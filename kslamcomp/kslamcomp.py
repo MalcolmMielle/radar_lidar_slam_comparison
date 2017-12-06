@@ -46,19 +46,11 @@ class KSlamComp:
 	def print(self):
 		print("Printing data")
 		print("SLAM")
-		#self.slam.print()
-		#for x in range(0, len(self.slam.posetime)):
-			#print(str(self.slam.posetime[x][0].getPosition().x) + " " \
-				#+ str(self.slam.posetime[x][0].getPosition().y) + " " \
-				#+ str(self.slam.posetime[x][0].getOrientation()) + " " \
-				#+ str(self.slam.posetime[x][1]))
+		self.slam.print()
+		
 		print("GT")
-		#self.gt.print()
-		#for x in range(0, len(self.gt.posetime)):
-			#print(str(self.gt.posetime[x][0].getPosition().x) + " " \
-				#+ str(self.gt.posetime[x][0].getPosition().y) + " " \
-				#+ str(self.gt.posetime[x][0].getOrientation()) + " " \
-				#+ str(self.gt.posetime[x][1]))
+		self.gt.print()
+
 		print("\n")
 			
 	def printraw(self):
@@ -258,13 +250,19 @@ class KSlamComp:
 			#Trans displacement 
 			transdist_slam = self.slam.getTransDisplacement(i_slam, node_forward_slam)
 			transdist_gt = self.gt.getTransDisplacement(i_gt, node_forward_gt)
+			
+			assert transdist_slam >= 0
+			assert transdist_gt >= 0
+			
 			transnoise = 0
 			if squared == True :
-				transnoise = math.sqrt( (transdist_gt - transdist_slam) * (transdist_gt - transdist_slam) )
+				transnoise = (transdist_gt - transdist_slam) * (transdist_gt - transdist_slam)
 			else :
 				transnoise = transdist_gt - transdist_slam
+			transnoise = abs(transnoise)
 			
-			#print("trans noise " + str(transnoise))
+			#print("trans displacements ", transdist_slam, " ", transdist_gt, "trans noise ", transnoise )
+			
 			if self.use_translation == True:
 				#print("t")
 				displacement = displacement + transnoise
@@ -298,10 +296,10 @@ class KSlamComp:
 			transdist_gt = self.gt.getTransDisplacement(i_gt, node_backward_gt)
 			transnoise = 0
 			if squared == True :
-				transnoise = math.sqrt( (transdist_gt - transdist_slam) * (transdist_gt - transdist_slam) )
+				transnoise = (transdist_gt - transdist_slam) * (transdist_gt - transdist_slam)
 			else :
 				transnoise = transdist_gt - transdist_slam
-				
+			transnoise = abs(transnoise)
 			#print("trans noise " + str(transnoise))
 			
 			if self.use_translation == True:

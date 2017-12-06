@@ -26,12 +26,10 @@ class GnuplotReducer:
 		self.toupdate.exportGnuplot(f)
 		f.write("\n\n# GT - pose_x pose_y orientation time" + "\n")
 		self.reader_toupdate.posetime_gt.exportGnuplot(f)
-		sum = 0
 		count = 0
 		f.write("\n\n# Displacement and sum" + "\n")
 		for el in self.displacement:
-			sum = sum + el
-			f.write(str(count) + " " + str(el)+ " " + str(sum) + "\n")
+			f.write(str(count) + " " + str(el)+ " " + str(self.sum[count]) + "\n")
 			count = count + 1
 
 	def print(self):
@@ -58,6 +56,7 @@ class GnuplotReducer:
 		indexes = self.reduceSLAM(delta)
 		
 		for el in indexes:
+			#print(el, " sum ", self.reader_toupdate.sum[el])
 			self.displacement.append(self.reader_toupdate.displacement[el])
 			self.sum.append(self.reader_toupdate.sum[el])
 	
