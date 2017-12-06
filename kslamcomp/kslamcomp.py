@@ -37,11 +37,11 @@ class KSlamComp:
 		self.gt_raw.read(gt_file_name)
 		#assert len(self.slam_raw.posetime) == len(self.gt_raw.posetime)
 			
-	def readSLAM(self, file_name):
-		self.slam_raw.read(file_name)
+	def readSLAM(self, file_name, is_radian = True):
+		self.slam_raw.read(file_name, is_radian)
 			
-	def readGT(self, file_name):
-		self.gt_raw.read(file_name)
+	def readGT(self, file_name, is_radian = True):
+		self.gt_raw.read(file_name, is_radian)
 	
 	def print(self):
 		print("Printing data")
@@ -266,18 +266,22 @@ class KSlamComp:
 			
 			#print("trans noise " + str(transnoise))
 			if self.use_translation == True:
+				#print("t")
 				displacement = displacement + transnoise
 			
 			#Rot displacement
 			oriendist_slam = self.slam.getOrientationDisplacement(i_slam, node_forward_slam)
 			oriendist_gt = self.gt.getOrientationDisplacement(i_gt, node_forward_gt)
+			#print("orientation displacements ", oriendist_slam, " ", oriendist_gt)
 			orientnoise = 0
 			if squared == True :
+				#print("squared")
 				orientnoise = (oriendist_slam - oriendist_gt) * (oriendist_slam - oriendist_gt)
 			else :
 				orientnoise = oriendist_slam - oriendist_gt
 			
 			if self.use_orientation == True:
+				#print("o")
 				displacement = displacement + orientnoise
 			
 			node_forward_gt = node_forward_gt + 1
@@ -301,17 +305,20 @@ class KSlamComp:
 			#print("trans noise " + str(transnoise))
 			
 			if self.use_translation == True:
+				#print("t")
 				displacement = displacement + transnoise
 			
 			#Rot displacement
 			oriendist_slam = self.slam.getOrientationDisplacement(i_slam, node_backward_slam)
 			oriendist_gt = self.gt.getOrientationDisplacement(i_gt, node_backward_gt)
 			if squared == True :
+				#print("squared")
 				orientnoise = (oriendist_slam - oriendist_gt) * (oriendist_slam - oriendist_gt)
 			else :
 				orientnoise = oriendist_slam - oriendist_gt
 			 
 			if self.use_orientation == True:
+				#print("o")
 				displacement = displacement + orientnoise
 
 			node_backward_gt = node_backward_gt - 1

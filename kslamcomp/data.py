@@ -35,11 +35,19 @@ class Data:
 		#Tuple with pose and time 
 		self.posetime = list()
 		
-	def read(self, file_name):
+	def read(self, file_name, is_radian = True):
 		f = open(file_name, 'r')
 		for line in f:
 			assert len(line.split()) == 4
-			slampose = Pose(Point( float(line.split()[0]), float(line.split()[1] )),  float(line.split()[2]))
+			orientation = float(line.split()[2])
+			if is_radian == False:
+				orientation = orientation * 2 * math.pi / 360
+			##Get all angle between 0 and 2pi
+			if orientation < 0:
+				orientation = orientation + (2 * math.pi)
+			if orientation > 2 * math.pi :
+				orientation = orientation - (2 * math.pi)
+			slampose = Pose(Point( float(line.split()[0]), float(line.split()[1] )), orientation)
 			self.posetime.append( (slampose, float(line.split()[3]) ) )
 			
 	def exportGnuplot(self, f):
@@ -64,11 +72,17 @@ class Data:
 	
 	#From i toward j
 	def getOrientationDisplacement(self, from_i, toward_j):
-		diff = self.posetime[from_i][0].getOrientation() - self.posetime[toward_j][0].getOrientation()
-		while diff < 0 :
-			diff = diff + (2 * math.pi)
-		while diff > 2 * math.pi :
-			diff = diff - (2 * math.pi)
+		diff = abs( self.posetime[from_i][0].getOrientation() - self.posetime[toward_j][0].getOrientation() )
+		## Get the smallest angle between them
+		if diff > 2 * math.pi:
+			print(diff, " = ", self.posetime[from_i][0].getOrientation(), " - ", self.posetime[toward_j][0].getOrientation() )
+		
+		assert diff >= 0
+		assert diff < 2 * math.pi
+		
+		if diff > math.pi:
+			diff = (2 * math.pi) - diff
+		
 		return diff
 	
 	def visu(self, plot, nb_of_pose = -1, color = 'r'):
