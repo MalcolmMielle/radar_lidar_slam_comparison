@@ -15,9 +15,17 @@ class KSlamComp:
 		self.nb_node_forward = forward_nodes_lookup
 		self.nb_node_backward = backward_nodes_lookup
 		self.displacement_vec = list()
+		self.displacement_vec_abs = list()
 		
 		self.use_orientation = False
 		self.use_translation = True
+		
+		self.mean_displacement = -1
+		self.std_deviation = -1
+		self.mean_displacement_abs = -1
+		self.std_deviation_abs = -1
+		
+		self.distance_to_gt = -1
 	
 	def read(self, file_name):
 		assert(len(self.slam_raw.posetime) == 0)
@@ -85,7 +93,9 @@ class KSlamComp:
 		Compute the total error in the SLAM. Don't forget to call sort before
 		"""
 		self.displacement_vec.clear()
+		self.displacement_vec_abs.clear()
 		displacement = 0
+		displacement_abs = 0
 		#print(len(self.slam.posetime))
 		if nb_of_pose > len(self.slam.posetime) or nb_of_pose < 0:
 			nb_of_pose = len(self.slam.posetime)
@@ -93,9 +103,11 @@ class KSlamComp:
 			#print(x, "of", nb_of_pose)
 			displacement_here = self.computeDisplacementNode(x, x, squared)
 			#print(displacement)
-			displacement = displacement + displacement_here
-			self.displacement_vec.append(displacement_here)
-		return displacement
+			displacement = displacement + displacement_here[0]
+			displacement_abs = displacement_abs + displacement_here[1]
+			self.displacement_vec.append(displacement_here[0])
+			self.displacement_vec_abs.append(displacement_here[1])
+		return (displacement, displacement_abs)
 	
 	def exportGnuplot(self, file_out):
 		f = open(file_out, 'w')
@@ -112,6 +124,23 @@ class KSlamComp:
 			sum = sum + el
 			f.write(str(count) + " " + str(el)+ " " + str(sum) + "\n")
 			count = count + 1
+			
+		f.write("\n\n# Displacement abs and sum" + "\n")
+		sum = 0
+		count = 0
+		for el in self.displacement_vec_abs:
+			sum = sum + el
+			f.write(str(count) + " " + str(el)+ " " + str(sum) + "\n")
+			count = count + 1
+		
+		f.write("\n\n# Displacement mean and std deviation" + "\n")
+		f.write(str(self.mean_displacement) + " " + str(self.std_deviation) )
+		
+		f.write("\n\n# Displacement mean absolute value and std deviation" + "\n")
+		f.write(str(self.mean_displacement_abs) + " " + str(self.std_deviation_abs) )
+		
+		f.write("\n\n# Distance to GT" + "\n")
+		f.write(str(self.distance_to_gt) )
 			
 	def visuSLAM(self, nb_of_pose = -1, block = False):
 		if nb_of_pose > len(self.slam.posetime) or nb_of_pose < 0:
@@ -171,6 +200,36 @@ class KSlamComp:
 		plt.scatter(pose_x, pose_y, size1, 'r')	
 		plt.title("displacement")
 		plt.show(block)
+		
+	
+	def distanceToGT(self):
+		last_pose_slam = self.slam.posetime[len(self.slam.posetime) - 1][0]
+		last_pose_gt = self.gt.posetime[len(self.gt.posetime) - 1][0]
+		
+		self.distance_to_gt = last_pose_gt.getPosition().dist( last_pose_slam.getPosition() )
+	
+	
+	
+	def meanAndStd(self, list_in):
+		mean_displacement = 0
+		for dis in list_in:
+			mean_displacement = mean_displacement + dis
+		mean_displacement = mean_displacement / len(list_in)
+		
+		std_deviation = 0
+		xminmean = 0
+		for dis in list_in:
+			xminmean = xminmean + ( (dis - mean_displacement) * (dis - mean_displacement) )
+		xminmean = xminmean / len(list_in)
+		std_deviation = math.sqrt(xminmean)
+		return (mean_displacement, std_deviation)
+		
+		
+	def meanDisplacement(self):
+		self.mean_displacement, self.std_deviation = self.meanAndStd(self.displacement_vec)
+		self.mean_displacement_abs, self.std_deviation_abs = self.meanAndStd(self.displacement_vec_abs)
+		assert self.mean_displacement_abs >= 0
+		
 	
 	#Protected functions
 	
@@ -236,6 +295,7 @@ class KSlamComp:
 		Compute the displacement between two nodes i_slam and i_gt
 		"""
 		displacement = 0
+		displacement_abs = 0
 		node_forward_slam = i_slam + 1
 		node_forward_gt = i_gt + 1
 		slamposition_init = self.slam.getPose(i_slam).getPosition()
@@ -259,13 +319,14 @@ class KSlamComp:
 				transnoise = (transdist_gt - transdist_slam) * (transdist_gt - transdist_slam)
 			else :
 				transnoise = transdist_gt - transdist_slam
-			transnoise = abs(transnoise)
+			#transnoise = abs(transnoise)
 			
 			#print("trans displacements ", transdist_slam, " ", transdist_gt, "trans noise ", transnoise )
 			
 			if self.use_translation == True:
 				#print("t")
 				displacement = displacement + transnoise
+				displacement_abs = displacement_abs + abs(transnoise)
 			
 			#Rot displacement
 			oriendist_slam = self.slam.getOrientationDisplacement(i_slam, node_forward_slam)
@@ -281,6 +342,7 @@ class KSlamComp:
 			if self.use_orientation == True:
 				#print("o")
 				displacement = displacement + orientnoise
+				displacement_abs = displacement_abs + abs(orientnoise)
 			
 			node_forward_gt = node_forward_gt + 1
 			node_forward_slam = node_forward_slam + 1
@@ -299,12 +361,13 @@ class KSlamComp:
 				transnoise = (transdist_gt - transdist_slam) * (transdist_gt - transdist_slam)
 			else :
 				transnoise = transdist_gt - transdist_slam
-			transnoise = abs(transnoise)
+			#transnoise = abs(transnoise)
 			#print("trans noise " + str(transnoise))
 			
 			if self.use_translation == True:
 				#print("t")
 				displacement = displacement + transnoise
+				displacement_abs = displacement_abs + abs(transnoise)
 			
 			#Rot displacement
 			oriendist_slam = self.slam.getOrientationDisplacement(i_slam, node_backward_slam)
@@ -318,6 +381,7 @@ class KSlamComp:
 			if self.use_orientation == True:
 				#print("o")
 				displacement = displacement + orientnoise
+				displacement_abs = displacement_abs + abs(orientnoise)
 
 			node_backward_gt = node_backward_gt - 1
 			node_backward_slam = node_backward_slam - 1
@@ -327,6 +391,6 @@ class KSlamComp:
 		#print(nb_relative_relation)
 		
 		if nb_relative_relation != 0:
-			return displacement/nb_relative_relation
+			return (displacement/nb_relative_relation, displacement_abs/nb_relative_relation)
 		## If nothing was calculated i.e. nb_relative_relation is 0, we return 0
-		return 0
+		return (0, 0)

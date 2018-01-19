@@ -4,6 +4,28 @@
 from kslamcomp import kslamcomp
 from kslamcomp import gnuplot_reducer
 
+def reduce_files_gmapping(gmapping_files, use_position):
+	for el in gmapping_files:
+		reducer = gnuplot_reducer.GnuplotReducer(el.gt, el.file_name)
+		#d.print()
+		kslam = reducer.reduce(1)
+		kslam.use_translation = use_position
+		kslam.use_orientation = not use_position
+		ret = kslam.sort(0.5)
+		assert(ret == True)
+		print("Sorted")
+		
+		kslam.compute(-1, False)
+		
+		kslam.meanDisplacement()
+		kslam.distanceToGT()
+		
+		#if use_position:
+		kslam.exportGnuplot(el.file_out_position)
+		#else:
+			#kslam.exportGnuplot(el.file_out_orientation)
+
+
 class Pair:
 	def __init__(self, file_name, gt_name, file_out_position, file_out_orientation, is_rad = True):
 		self.file_name = file_name
@@ -15,12 +37,12 @@ class Pair:
 def main():
 	names = list()
 	####NDT laserscan
-	####names.append(Pair("data_files/log_fuser_pointcloud_offline_people_long.txt", "data_files/log_fuser_vmc_people_long.txt", "displacement_fuser_pointcloud_offline_people_long.dat"))
+	names.append(Pair("data_files/log_fuser_pointcloud_offline_people_long.txt", "data_files/log_fuser_vmc_people_long.txt", "results/displacement_fuser_pointcloud_position_offline_people_long.dat", "results/displacement_fuser_pointcloud_orientation_offline_people_long.dat"))
 	names.append(Pair("data_files/log_fuser_pointcloud_offline_2017-08-29-15-30-59.txt", "data_files/log_fuser_vmc_2017-08-29-15-30-59.txt", "results/displacement_fuser_pointcloud_position_offline_2017-08-29-15-30-59.dat", "results/displacement_fuser_pointcloud_orientation_offline_2017-08-29-15-30-59.dat"))
 	names.append(Pair("data_files/log_fuser_pointcloud_offline_2017-08-29-15-37-08.txt", "data_files/log_fuser_vmc_2017-08-29-15-37-08.txt", "results/displacement_fuser_pointcloud_position_offline_2017-08-29-15-37-08.dat", "results/displacement_fuser_pointcloud_orientation_offline_2017-08-29-15-37-08.dat"))
 	
 	####NDT mpr
-	####names.append(Pair("data_files/log_fuser_mpr_offline_people_long.txt", "data_files/log_fuser_vmc_people_long.txt", "displacement_fuser_mpr_offline_people_long.dat"))
+	names.append(Pair("data_files/log_fuser_mpr_offline_people_long.txt", "data_files/log_fuser_vmc_people_long.txt", "results/displacement_fuser_mpr_position_offline_people_long.dat", "results/displacement_fuser_mpr_orientation_offline_people_long.dat"))
 	names.append(Pair("data_files/log_fuser_mpr_offline_2017-08-29-15-30-59.txt", "data_files/log_fuser_vmc_2017-08-29-15-30-59.txt", "results/displacement_fuser_mpr_position_offline_2017-08-29-15-30-59.dat", "results/displacement_fuser_mpr_orientation_offline_2017-08-29-15-30-59.dat"))
 	names.append(Pair("data_files/log_fuser_mpr_offline_2017-08-29-15-37-08.txt", "data_files/log_fuser_vmc_2017-08-29-15-37-08.txt", "results/displacement_fuser_mpr_position_offline_2017-08-29-15-37-08.dat", "results/displacement_fuser_mpr_orientation_offline_2017-08-29-15-37-08.dat"))
 	
@@ -30,7 +52,7 @@ def main():
 	names.append(Pair("data_files/GMapping/gmapping_laser_2017-08-29-15-37-08.txt", "data_files/log_fuser_vmc_2017-08-29-15-37-08.txt", "results/displacement_gmapping_laser_position_2017-08-29-15-37-08.dat", "results/displacement_gmapping_laser_orientation_2017-08-29-15-37-08.dat", False))
 	
 	###Gmapping mpr
-	names.append(Pair("data_files/GMapping/gmapping_mpr_people_long.txt", "data_files/log_fuser_vmc_people_long.txt", "displacement_gmapping_mpr_position_people_long.dat", "results/displacement_gmapping_mpr_orientation_people_long.dat", False))
+	names.append(Pair("data_files/GMapping/gmapping_mpr_people_long.txt", "data_files/log_fuser_vmc_people_long.txt", "results/displacement_gmapping_mpr_position_people_long.dat", "results/displacement_gmapping_mpr_orientation_people_long.dat", False))
 	names.append(Pair("data_files/GMapping/gmapping_mpr_2017-08-29-15-30-59.txt", "data_files/log_fuser_vmc_2017-08-29-15-30-59.txt", "results/displacement_gmapping_mpr_position_2017-08-29-15-30-59.dat", "results/displacement_gmapping_mpr_orientation_2017-08-29-15-30-59.dat", False))
 	names.append(Pair("data_files/GMapping/gmapping_mpr_2017-08-29-15-37-08.txt", "data_files/log_fuser_vmc_2017-08-29-15-37-08.txt", "results/displacement_gmapping_mpr_position_2017-08-29-15-37-08.dat", "results/displacement_gmapping_mpr_orientation_2017-08-29-15-37-08.dat", False))
 	
@@ -85,6 +107,9 @@ def main():
 			#d.printDisplacement()
 			#d.visuDisplacement()
 			
+			d.meanDisplacement()
+			d.distanceToGT()
+			
 			if use_position:
 				d.exportGnuplot(el.file_out_position)
 			else:
@@ -94,28 +119,29 @@ def main():
      
 	gmapping_files = list()
 	
+	gmapping_files.append(Pair("results/displacement_gmapping_laser_position_people_long.dat", "results/displacement_fuser_pointcloud_position_offline_people_long.dat", "results/displacement_gmapping_laser_position_people_long_smaller.dat", ""))
 	gmapping_files.append(Pair("results/displacement_gmapping_laser_position_2017-08-29-15-30-59.dat", "results/displacement_fuser_pointcloud_position_offline_2017-08-29-15-30-59.dat", "results/displacement_gmapping_laser_position_2017-08-29-15-30-59_smaller.dat", ""))
-	
 	gmapping_files.append(Pair("results/displacement_gmapping_laser_position_2017-08-29-15-37-08.dat", "results/displacement_fuser_pointcloud_position_offline_2017-08-29-15-37-08.dat", "results/displacement_gmapping_laser_position_2017-08-29-15-37-08_smaller.dat", ""))
 	
+	gmapping_files.append(Pair("results/displacement_gmapping_mpr_position_people_long.dat", "results/displacement_fuser_mpr_position_offline_people_long.dat", "results/displacement_gmapping_mpr_position_people_long_smaller.dat", ""))
 	gmapping_files.append(Pair("results/displacement_gmapping_mpr_position_2017-08-29-15-30-59.dat", "results/displacement_fuser_mpr_position_offline_2017-08-29-15-30-59.dat", "results/displacement_gmapping_mpr_position_2017-08-29-15-30-59_smaller.dat", ""))
-	
 	gmapping_files.append(Pair("results/displacement_gmapping_mpr_position_2017-08-29-15-37-08.dat", "results/displacement_fuser_mpr_position_offline_2017-08-29-15-37-08.dat", "results/displacement_gmapping_mpr_position_2017-08-29-15-37-08_smaller.dat", ""))
 	
-	gmapping_files.append(Pair("results/displacement_gmapping_laser_orientation_2017-08-29-15-30-59.dat", "results/displacement_fuser_pointcloud_orientation_offline_2017-08-29-15-30-59.dat", "results/displacement_gmapping_laser_orientation_2017-08-29-15-30-59_smaller.dat", ""))
+	reduce_files_gmapping(gmapping_files, True)
+	gmapping_files = list()
+	assert len(gmapping_files) == 0
 	
+	gmapping_files.append(Pair("results/displacement_gmapping_laser_orientation_people_long.dat", "results/displacement_fuser_pointcloud_orientation_offline_people_long.dat", "results/displacement_gmapping_laser_orientation_people_long_smaller.dat", ""))
+	gmapping_files.append(Pair("results/displacement_gmapping_laser_orientation_2017-08-29-15-30-59.dat", "results/displacement_fuser_pointcloud_orientation_offline_2017-08-29-15-30-59.dat", "results/displacement_gmapping_laser_orientation_2017-08-29-15-30-59_smaller.dat", ""))
 	gmapping_files.append(Pair("results/displacement_gmapping_laser_orientation_2017-08-29-15-37-08.dat", "results/displacement_fuser_pointcloud_orientation_offline_2017-08-29-15-37-08.dat", "results/displacement_gmapping_laser_orientation_2017-08-29-15-37-08_smaller.dat", ""))
 	
+	gmapping_files.append(Pair("results/displacement_gmapping_mpr_orientation_people_long.dat", "results/displacement_fuser_mpr_orientation_offline_people_long.dat", "results/displacement_gmapping_mpr_orientation_people_long_smaller.dat", ""))
 	gmapping_files.append(Pair("results/displacement_gmapping_mpr_orientation_2017-08-29-15-30-59.dat", "results/displacement_fuser_mpr_orientation_offline_2017-08-29-15-30-59.dat", "results/displacement_gmapping_mpr_orientation_2017-08-29-15-30-59_smaller.dat", ""))
-	
 	gmapping_files.append(Pair("results/displacement_gmapping_mpr_orientation_2017-08-29-15-37-08.dat", "results/displacement_fuser_mpr_orientation_offline_2017-08-29-15-37-08.dat", "results/displacement_gmapping_mpr_orientation_2017-08-29-15-37-08_smaller.dat", ""))
 	
-	for el in gmapping_files:
-		d = gnuplot_reducer.GnuplotReducer(el.gt, el.file_name)
-		#d.print()
-		d.reduce(1)
-		print("Reduced ", el.file_out_position)
-		d.exportGnuplot(el.file_out_position)
+	reduce_files_gmapping(gmapping_files, False)
+	
+	
      
 
 if __name__ == "__main__":

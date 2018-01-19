@@ -14,36 +14,43 @@ class GnuplotReducer:
 		self.reader_toupdate = gnuplot_reader.GnuplotReader()
 		self.reader_base.read(file_base)
 		self.reader_toupdate.read(file_toupdate)
-
+		
 		#self.base 
 		self.toupdate = data.Data()
-		self.displacement = list()
-		self.sum = list()
+		#self.displacement = list()
+		#self.sum = list()
+		#self.displacement_abs = list()
+		#self.sum_abs = list()
 		
-	def exportGnuplot(self, file_out):
-		f = open(file_out, 'w')
-		f.write("# SLAM - pose_x pose_y orientation time" + "\n")
-		self.toupdate.exportGnuplot(f)
-		f.write("\n\n# GT - pose_x pose_y orientation time" + "\n")
-		self.reader_toupdate.posetime_gt.exportGnuplot(f)
-		count = 0
-		f.write("\n\n# Displacement and sum" + "\n")
-		for el in self.displacement:
-			f.write(str(count) + " " + str(el)+ " " + str(self.sum[count]) + "\n")
-			count = count + 1
+	#def exportGnuplot(self, file_out):
+		#f = open(file_out, 'w')
+		#f.write("# SLAM - pose_x pose_y orientation time" + "\n")
+		#self.toupdate.exportGnuplot(f)
+		#f.write("\n\n# GT - pose_x pose_y orientation time" + "\n")
+		#self.reader_toupdate.posetime_gt.exportGnuplot(f)
+		#count = 0
+		#f.write("\n\n# Displacement and sum" + "\n")
+		#for el in self.displacement:
+			#f.write(str(count) + " " + str(el)+ " " + str(self.sum[count]) + "\n")
+			#count = count + 1
+		#f.write("\n\n# Displacement absolute and sum" + "\n")
+		#count = 0
+		#for el in self.displacement_abs:
+			#f.write(str(count) + " " + str(el)+ " " + str(self.sum_abs[count]) + "\n")
+			#count = count + 1
 
-	def print(self):
-		print("Reader base")
-		self.reader_base.print()
-		print("Reader to update")
-		self.reader_toupdate.print()
+	#def print(self):
+		#print("Reader base")
+		#self.reader_base.print()
+		#print("Reader to update")
+		#self.reader_toupdate.print()
 	
-	def printReducedSLAM(self):
-		print("REDUCED SLAM")
-		self.toupdate.print()
-		print("DISPLACEMENT")
-		for i in range(len(self.displacement)):
-			print(i, " ", self.displacement[i], " ", self.sum[i])
+	#def printReducedSLAM(self):
+		#print("REDUCED SLAM")
+		#self.toupdate.print()
+		#print("DISPLACEMENT")
+		#for i in range(len(self.displacement)):
+			#print(i, " ", self.displacement[i], " ", self.sum[i])
 	#SlamData()
 	#GTData()
 
@@ -53,12 +60,25 @@ class GnuplotReducer:
 	#def GTData(self):
 	#pass
 	def reduce(self, delta = 0):
+		
+		to_update_kslamcomp = kslamcomp.KSlamComp()
+		
 		indexes = self.reduceSLAM(delta)
 		
+		to_update_kslamcomp.slam_raw = self.toupdate
 		for el in indexes:
-			#print(el, " sum ", self.reader_toupdate.sum[el])
-			self.displacement.append(self.reader_toupdate.displacement[el])
-			self.sum.append(self.reader_toupdate.sum[el])
+			to_update_kslamcomp.gt_raw.posetime.append( self.reader_toupdate.posetime_gt.posetime[el] )
+		
+		assert len(to_update_kslamcomp.slam_raw.posetime) == len(to_update_kslamcomp.gt_raw.posetime)
+		
+		return to_update_kslamcomp
+		
+		#for el in indexes:
+			##print(el, " sum ", self.reader_toupdate.sum[el])
+			#self.displacement.append(self.reader_toupdate.displacement[el])
+			#self.sum.append(self.reader_toupdate.sum[el])
+			#self.displacement_abs.append(self.reader_toupdate.displacement_abs[el])
+			#self.sum_abs.append(self.reader_toupdate.sum_abs[el])
 	
 
 	def reduceSLAM(self, delta = 0):
