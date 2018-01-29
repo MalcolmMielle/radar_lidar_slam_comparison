@@ -19,12 +19,12 @@ class GnuplotReader:
         self.posetime_slam.print()
 
     def readTrajSLAM(self, line):
-        slampose = data.Pose(data.Point( float(line.split()[0]), float(line.split()[1] )),  float(line.split()[2]))
-        self.posetime_slam.posetime.append( (slampose, float(line.split()[3]) ) )
+        slampose = data.Pose(data.Point( float(line.split()[1]), float(line.split()[2] )),  float(line.split()[3]))
+        self.posetime_slam.posetime.append( (slampose, float(line.split()[4]) ) )
     
     def readTrajGT(self, line):
-        slampose = data.Pose(data.Point( float(line.split()[0]), float(line.split()[1] )),  float(line.split()[2]))
-        self.posetime_gt.posetime.append( (slampose, float(line.split()[3]) ) )
+        slampose = data.Pose(data.Point( float(line.split()[1]), float(line.split()[2] )),  float(line.split()[3]))
+        self.posetime_gt.posetime.append( (slampose, float(line.split()[4]) ) )
         
     
     def readDisplacement(self, line):

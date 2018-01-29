@@ -16,6 +16,7 @@ class KSlamComp:
 		self.nb_node_backward = backward_nodes_lookup
 		self.displacement_vec = list()
 		self.displacement_vec_abs = list()
+		self.distance_slam_gt = list()
 		
 		self.use_orientation = False
 		self.use_translation = True
@@ -45,11 +46,11 @@ class KSlamComp:
 		self.gt_raw.read(gt_file_name)
 		#assert len(self.slam_raw.posetime) == len(self.gt_raw.posetime)
 			
-	def readSLAM(self, file_name, is_radian = True):
-		self.slam_raw.read(file_name, is_radian)
+	def readSLAM(self, file_name, is_radian = True, cov_rad = False):
+		self.slam_raw.read(file_name, is_radian, cov_rad)
 			
-	def readGT(self, file_name, is_radian = True):
-		self.gt_raw.read(file_name, is_radian)
+	def readGT(self, file_name, is_radian = True, cov_rad = False):
+		self.gt_raw.read(file_name, is_radian, cov_rad)
 	
 	def print(self):
 		print("Printing data")
@@ -107,6 +108,9 @@ class KSlamComp:
 			displacement_abs = displacement_abs + displacement_here[1]
 			self.displacement_vec.append(displacement_here[0])
 			self.displacement_vec_abs.append(displacement_here[1])
+			
+		self.compute_distance_to_gt()
+		
 		return (displacement, displacement_abs)
 	
 	def exportGnuplot(self, file_out):
@@ -131,6 +135,12 @@ class KSlamComp:
 		for el in self.displacement_vec_abs:
 			sum = sum + el
 			f.write(str(count) + " " + str(el)+ " " + str(sum) + "\n")
+			count = count + 1
+			
+		f.write("\n\n# Distance slam gt" + "\n")
+		count = 0
+		for el in self.distance_slam_gt:
+			f.write(str(count) + " " + str(el)+ "\n")
 			count = count + 1
 		
 		f.write("\n\n# Displacement mean and std deviation" + "\n")
@@ -222,13 +232,19 @@ class KSlamComp:
 		plt.show(block)
 		
 	
-	def distanceToGT(self):
+	def finalDistanceToGT(self):
 		last_pose_slam = self.slam.posetime[len(self.slam.posetime) - 1][0]
 		last_pose_gt = self.gt.posetime[len(self.gt.posetime) - 1][0]
 		
 		self.distance_to_gt = last_pose_gt.getPosition().dist( last_pose_slam.getPosition() )
 	
-	
+	def compute_distance_to_gt(self):
+		assert len(self.slam.posetime) == len(self.gt.posetime)
+		for x in range(len(self.slam.posetime)):
+			pose_slam = self.slam.posetime[x][0]
+			pose_gt = self.gt.posetime[x][0]
+			dist = pose_gt.getPosition().dist( pose_slam.getPosition() )
+			self.distance_slam_gt.append(dist)
 	
 	def meanAndStd(self, list_in):
 		mean_displacement = 0

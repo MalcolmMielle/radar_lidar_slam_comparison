@@ -34,29 +34,48 @@ class Data:
 	def __init__(self):
 		#Tuple with pose and time 
 		self.posetime = list()
+		self.is_rad = True
+		self.convert_to_rad = True
 		
-	def read(self, file_name, is_radian = True):
+	def read(self, file_name, is_radian = True, convert_to_rad = True):
 		f = open(file_name, 'r')
+		
+		self.is_rad = is_radian
+		
 		for line in f:
 			assert len(line.split()) == 4
 			orientation = float(line.split()[2])
 			if is_radian == False:
-				orientation = orientation * 2 * math.pi / 360
+				if convert_to_rad == True:
+					self.is_rad = True
+					orientation = orientation * 2 * math.pi / 360
+					#if orientation < 0:
+						#orientation = orientation + (2 * math.pi)
+					#if orientation >= 2 * math.pi :
+						#orientation = orientation - (2 * math.pi)
+				#else:
+					#if orientation < 0:
+						#orientation = orientation + (360)
+					#if orientation >= 360 :
+						#orientation = orientation - (360)
 			##Get all angle between 0 and 2pi
-			if orientation < 0:
-				orientation = orientation + (2 * math.pi)
-			if orientation > 2 * math.pi :
-				orientation = orientation - (2 * math.pi)
+			#else:
+				#if orientation < 0:
+					#orientation = orientation + (2 * math.pi)
+				#if orientation >= 2 * math.pi :
+					#orientation = orientation - (2 * math.pi)
 			slampose = Pose(Point( float(line.split()[0]), float(line.split()[1] )), orientation)
 			self.posetime.append( (slampose, float(line.split()[3]) ) )
 			
 	def exportGnuplot(self, f):
 		#print("El number " + str(len(self.posetime)))
+		count = 0
 		for el in self.posetime:
 			
 			#print(str(el[0].position.x) + " " + str(el[0].position.y) + " " + str(el[0].orientation) + " " + str(el[1]) + "\n")
 			
-			f.write(str(el[0].position.x) + " " + str(el[0].position.y) + " " + str(el[0].orientation) + " " + str(el[1]) + "\n")
+			f.write(str(count) + " " + str(el[0].position.x) + " " + str(el[0].position.y) + " " + str(el[0].orientation) + " " + str(el[1]) + "\n")
+			count = count + 1
 	
 	def getPose(self, i):
 		return self.posetime[i][0]
@@ -70,20 +89,42 @@ class Data:
 		#print("dist " , dist, "position ", self.posetime[i][0].print(), " ", self.posetime[j][0].print())
 		return dist
 	
+	def smallestSignedAngleBetweenRad(self, x, y):
+		a = (x - y) % 2 * math.pi
+		b = (y - x) % 2 * math.pi
+		return -a if a < b else b
+	
+	def smallestSignedAngleBetweenDeg(self, x, y):
+		a = (x - y) % 360
+		b = (y - x) % 360
+		return -a if a < b else b
+	
 	#From i toward j
 	def getOrientationDisplacement(self, from_i, toward_j):
-		diff = abs( self.posetime[from_i][0].getOrientation() - self.posetime[toward_j][0].getOrientation() )
+		if self.is_rad == True:
+			return self.smallestSignedAngleBetweenRad(self.posetime[from_i][0].getOrientation(), self.posetime[toward_j][0].getOrientation());
+		else:
+			return self.smallestSignedAngleBetweenDeg(self.posetime[from_i][0].getOrientation(), self.posetime[toward_j][0].getOrientation());
+		
+		#diff = self.posetime[from_i][0].getOrientation() - self.posetime[toward_j][0].getOrientation()
 		## Get the smallest angle between them
-		if diff > 2 * math.pi:
-			print(diff, " = ", self.posetime[from_i][0].getOrientation(), " - ", self.posetime[toward_j][0].getOrientation() )
+		#if diff > 2 * math.pi:
+			#print(diff, " = ", self.posetime[from_i][0].getOrientation(), " - ", self.posetime[toward_j][0].getOrientation() )
 		
-		assert diff >= 0
-		assert diff < 2 * math.pi
+		#if self.is_rad == True:
+			#assert diff >= - math.pi
+			#assert diff < math.pi
+			
+			#if diff > math.pi:
+				#diff = (2 * math.pi) - diff
+		#else:
+			#assert diff >= 0
+			#assert diff < 360
+			
+			#if diff > 180:
+				#diff = 360 - diff
 		
-		if diff > math.pi:
-			diff = (2 * math.pi) - diff
-		
-		return diff
+		#return diff
 	
 	def visu(self, plot, nb_of_pose = -1, color = 'r'):
 		pose_x = list()
