@@ -8,6 +8,8 @@ from kslamcomp import gnuplot_reader
 from kslamcomp import kslamcomp
 from kslamcomp import data
 
+import warnings
+
 class GnuplotReducer:
 	def __init__(self, file_base, file_toupdate):
 		self.reader_base = gnuplot_reader.GnuplotReader()
@@ -89,6 +91,8 @@ class GnuplotReducer:
 		seen = list()
 		seen_slam = list() # to avoid double value when rounding the time in the result file
 		
+		print(len(self.reader_base.posetime_slam.posetime))
+		
 		for element in self.reader_base.posetime_slam.posetime:
 			#print("new element " + element[0].print() + " time " + str(element[1]))
 			seen_slam_time = any(slam_time == element[1] for slam_time in seen_slam)
@@ -132,5 +136,10 @@ class GnuplotReducer:
 				if self.toupdate.posetime[x][1] == self.toupdate.posetime[x2][1]:
 					print("Repeating SLAM value: ", x, " and ", x2, "with ", self.toupdate.posetime[x][1], " == ", self.toupdate.posetime[x2][1])
 					return False
+				
+		print(len(indexes), "==" ,len(self.reader_base.posetime_slam.posetime))
+		
+		if (len(indexes) != len(self.reader_base.posetime_slam.posetime)):
+			warnings.warn("The instance will not have the same size")
 		
 		return indexes

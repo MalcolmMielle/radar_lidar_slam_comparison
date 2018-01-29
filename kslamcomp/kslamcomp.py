@@ -141,6 +141,26 @@ class KSlamComp:
 		
 		f.write("\n\n# Distance to GT" + "\n")
 		f.write(str(self.distance_to_gt) )
+		
+		f.close()
+		
+	def add_to_dictionnary(self, suffix, dict):
+		
+		round_up = lambda num : math.ceil(num * 1000) / 1000
+		
+		name = "d_" + suffix 
+		dict[name] = round_up(self.distance_to_gt)
+		if self.use_translation == True:
+			name = "dp_" + suffix 
+			dict[name] = round_up(self.mean_displacement_abs)
+			name = "dpsd_" + suffix 
+			dict[name] = round_up(self.std_deviation_abs)
+		else:
+			name = "do_" + suffix 
+			dict[name] = round_up(self.mean_displacement_abs)
+			name = "dosd_" + suffix 
+			dict[name] = round_up(self.std_deviation_abs)
+		
 			
 	def visuSLAM(self, nb_of_pose = -1, block = False):
 		if nb_of_pose > len(self.slam.posetime) or nb_of_pose < 0:

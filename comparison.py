@@ -4,11 +4,58 @@
 from kslamcomp import kslamcomp
 from kslamcomp import gnuplot_reducer
 
+distance_to_gt = dict()
+
+
+def to_latex_table(file_name):
+	f = open(file_name, 'w')
+	
+	f.write("Distance to ground truth" +\
+		" & "+ str( distance_to_gt['d_first_fuser_radar'] ) + \
+		" & "+ str( distance_to_gt['d_first_fuser_velodyne'] ) + \
+		" & "+ str( distance_to_gt['d_first_gmapping_radar'] ) + \
+		" & "+ str( distance_to_gt['d_first_gmapping_velodyne'] ) +\
+		" & "+ str( distance_to_gt['d_second_fuser_radar'] ) + \
+		" & "+ str( distance_to_gt['d_second_fuser_velodyne'] ) +\
+		" & "+ str( distance_to_gt['d_second_gmapping_radar'] ) + \
+		" & "+ str( distance_to_gt['d_second_gmapping_velodyne'] ) +\
+		" & "+ str( distance_to_gt['d_third_fuser_radar'] ) +\
+		" & "+ str( distance_to_gt['d_third_fuser_velodyne'] ) +\
+		" & "+ str( distance_to_gt['d_third_gmapping_radar'] ) +\
+		" & "+ str( distance_to_gt['d_third_gmapping_velodyne'] ) + r"\\")
+	
+	
+	f.write("\n\n")
+	
+	f.write("Mean displacement in position & \makecell{"+ str( distance_to_gt['dp_first_fuser_radar'] ) + r"\\$\pm$"+ str( distance_to_gt['dpsd_first_fuser_radar'] ) + "} & \makecell{"+ str( distance_to_gt['dp_first_fuser_velodyne'] ) + r"\\$\pm$"+ str( distance_to_gt['dpsd_first_fuser_velodyne'] ) + "} & \makecell{"+ str( distance_to_gt['dp_first_gmapping_radar'] ) + r"\\$\pm$"+ str( distance_to_gt['dpsd_first_gmapping_radar'] ) + "} & \makecell{"+ str( distance_to_gt['dp_first_gmapping_velodyne'] ) + r"\\$\pm$"+ str( distance_to_gt['dpsd_first_gmapping_velodyne'] ) + "} & \makecell{"+ str( distance_to_gt['dp_second_fuser_radar'] ) + r"\\$\pm$"+ str( distance_to_gt['dpsd_second_fuser_radar'] ) + "} & \makecell{"+ str( distance_to_gt['dp_second_fuser_velodyne'] ) + r"\\$\pm$"+ str( distance_to_gt['dpsd_second_fuser_velodyne'] ) + "} & \makecell{"+ str( distance_to_gt['dp_second_gmapping_radar'] ) + r"\\$\pm$"+ str( distance_to_gt['dpsd_second_gmapping_radar'] ) + "} & \makecell{"+ str( distance_to_gt['dp_second_gmapping_velodyne'] ) + r"\\$\pm$"+ str( distance_to_gt['dpsd_second_gmapping_velodyne'] ) + "} & \makecell{"+ str( distance_to_gt['dp_third_fuser_radar'] ) + r"\\$\pm$"+ str( distance_to_gt['dpsd_third_fuser_radar'] ) + "} & \makecell{"+ str( distance_to_gt['dp_third_fuser_velodyne'] ) + r"\\$\pm$"+ str( distance_to_gt['dpsd_third_fuser_velodyne'] ) + "} & \makecell{"+ str( distance_to_gt['dp_third_gmapping_radar'] ) + r"\\$\pm$"+ str( distance_to_gt['dpsd_third_gmapping_radar'] ) + "} & \makecell{"+ str( distance_to_gt['dp_third_gmapping_velodyne'] ) + r"\\$\pm$"+ str( distance_to_gt['dpsd_third_gmapping_velodyne'] ) + r"}\\")
+	
+	f.write("\n\n")
+	
+	f.write("Mean displacement in orientation & \makecell{"+ str( distance_to_gt['do_first_fuser_radar'] ) + r"\\$\pm$"+ str( distance_to_gt['dosd_first_fuser_radar'] ) + "} & \makecell{"+ str( distance_to_gt['do_first_fuser_velodyne'] ) + r"\\$\pm$"+ str( distance_to_gt['dosd_first_fuser_velodyne'] ) + "} & \makecell{"+ str( distance_to_gt['do_first_gmapping_radar'] ) + r"\\$\pm$"+ str( distance_to_gt['dosd_first_gmapping_radar'] ) + "} & \makecell{"+ str( distance_to_gt['do_first_gmapping_velodyne'] ) + r"\\$\pm$"+ str( distance_to_gt['dosd_first_gmapping_velodyne'] ) + "} & \makecell{"+ str( distance_to_gt['do_second_fuser_radar'] ) + r"\\$\pm$"+ str( distance_to_gt['dosd_second_fuser_radar'] ) + "} & \makecell{"+ str( distance_to_gt['do_second_fuser_velodyne'] ) + r"\\$\pm$"+ str( distance_to_gt['dosd_second_fuser_velodyne'] ) + "} & \makecell{"+ str( distance_to_gt['do_second_gmapping_radar'] ) + r"\\$\pm$"+ str( distance_to_gt['dosd_second_gmapping_radar'] ) + "} & \makecell{"+ str( distance_to_gt['do_second_gmapping_velodyne'] ) + r"\\$\pm$"+ str( distance_to_gt['dosd_second_gmapping_velodyne'] ) + "} & \makecell{"+ str( distance_to_gt['do_third_fuser_radar'] ) + r"\\$\pm$"+ str( distance_to_gt['dosd_third_fuser_radar'] ) + "} & \makecell{"+ str( distance_to_gt['do_third_fuser_velodyne'] ) + r"\\$\pm$"+ str( distance_to_gt['dosd_third_fuser_velodyne'] ) + "} & \makecell{"+ str( distance_to_gt['do_third_gmapping_radar'] ) + r"\\$\pm$"+ str( distance_to_gt['dosd_third_gmapping_radar'] ) + "} & \makecell{"+ str( distance_to_gt['do_third_gmapping_velodyne'] ) + r"\\$\pm$"+ str( distance_to_gt['dosd_third_gmapping_velodyne'] ) + r"}\\")
+	
+	
+	f.close()
+	 #Distance to ground truth                & 3.57  & 0.35 & 0.98 & 0.35 & 0.60 & 0.18 & 1.21 & 0.34 & 0.26 & 0.06 & 0.07 & 0.07 \\
+    
+    #Mean displacement in position           & 
+    #\makecell{0.06 \\$\pm$ 0.19} & \makecell{0.005 \\$\pm$ 0.005} & \makecell{0.01 \\$\pm$ 0.03} & \makecell{0.01 \\$\pm$ 0.03} &
+    #\makecell{0.035 \\$\pm$ 0.06} & \makecell{0.015 \\$\pm$ 0.02} & \makecell{0.01 \\$\pm$ 0.02} & \makecell{0.01 \\$\pm$ 0.02} &
+    #\makecell{0.03 \\$\pm$ 0.03} & \makecell{0.01 \\$\pm$ 0.01} & \makecell{0.01 \\$\pm$ 0.035} & \makecell{0.01 \\$\pm$ 0.03} \\
+    
+    #Accumulated displacement in orientation & 
+    #\makecell{0.03 \\$\pm$ 0.04} & \makecell{0.001 \\$\pm$ 0.001} & \makecell{0.004 \\$\pm$ 0.01} & \makecell{0.001 \\$\pm$ 0.001} &
+    #\makecell{0.02 \\$\pm$ 0.02} & \makecell{0.003 \\$\pm$ 0.004} & \makecell{0.004 \\$\pm$ 0.01} & \makecell{0.001 \\$\pm$ 0.001} &
+    #\makecell{0.02 \\$\pm$ 0.02} & \makecell{0.002 \\$\pm$ 0.003} & \makecell{0.0045 \\$\pm$ 0.01} & \makecell{0.001 \\$\pm$ 0.001} \\
+
+
+
+
+
 def reduce_files_gmapping(gmapping_files, use_position):
 	for el in gmapping_files:
 		reducer = gnuplot_reducer.GnuplotReducer(el.gt, el.file_name)
 		#d.print()
-		kslam = reducer.reduce(1)
+		kslam = reducer.reduce(2)
 		kslam.use_translation = use_position
 		kslam.use_orientation = not use_position
 		ret = kslam.sort(0.5)
@@ -24,6 +71,8 @@ def reduce_files_gmapping(gmapping_files, use_position):
 		kslam.exportGnuplot(el.file_out_position)
 		#else:
 			#kslam.exportGnuplot(el.file_out_orientation)
+		
+		kslam.add_to_dictionnary(el.file_out_orientation, distance_to_gt)
 
 
 class Pair:
@@ -56,92 +105,139 @@ def main():
 	names.append(Pair("data_files/GMapping/gmapping_mpr_2017-08-29-15-30-59.txt", "data_files/log_fuser_vmc_2017-08-29-15-30-59.txt", "results/displacement_gmapping_mpr_position_2017-08-29-15-30-59.dat", "results/displacement_gmapping_mpr_orientation_2017-08-29-15-30-59.dat", False))
 	names.append(Pair("data_files/GMapping/gmapping_mpr_2017-08-29-15-37-08.txt", "data_files/log_fuser_vmc_2017-08-29-15-37-08.txt", "results/displacement_gmapping_mpr_position_2017-08-29-15-37-08.dat", "results/displacement_gmapping_mpr_orientation_2017-08-29-15-37-08.dat", False))
 	
-	for i in range(2):
-		use_position = True
-		if i == 1:
-			use_position = False
+	#for i in range(2):
+		#use_position = True
+		#if i == 1:
+			#use_position = False
 			
-		for el in names:
-			# parse command line options
-			d = kslamcomp.KSlamComp(1, 0)
-			d.use_translation = use_position
-			d.use_orientation = not use_position
-			#d.readSLAM("data_files/log_fuser_pointcloud_offline_people_long.txt")
-			#d.readSLAM("data_files/log_fuser_mpr_offline_2017-08-29-15-30-59.txt")
-			d.readSLAM(el.file_name, el.is_radian)
-			d.readGT(el.gt)
-			#d.readGT("data_files/log_fuser_vmc_2017-08-29-15-30-59.txt")
-			#d.readGT("data_files/log_fuser_vmc_2017-08-29-15-37-08.txt")
-			print("Read")
-			#d.printraw()
-			#d.visu()
+		#for el in names:
+			## parse command line options
+			#d = kslamcomp.KSlamComp(1, 0)
+			#d.use_translation = use_position
+			#d.use_orientation = not use_position
+			##d.readSLAM("data_files/log_fuser_pointcloud_offline_people_long.txt")
+			##d.readSLAM("data_files/log_fuser_mpr_offline_2017-08-29-15-30-59.txt")
+			#d.readSLAM(el.file_name, el.is_radian)
+			#d.readGT(el.gt)
+			##d.readGT("data_files/log_fuser_vmc_2017-08-29-15-30-59.txt")
+			##d.readGT("data_files/log_fuser_vmc_2017-08-29-15-37-08.txt")
+			#print("Read")
+			##d.printraw()
+			##d.visu()
 			
-			ret = d.sort(0.5)
-			assert(ret == True)
-			print("Sorted")
-			#d.print()
+			#ret = d.sort(0.5)
+			#assert(ret == True)
+			#print("Sorted")
+			##d.print()
 			
-			#d.visu()
+			##d.visu()
 			
 			
-			print("Displacement")
+			#print("Displacement")
 			
-			#displacement = d.computeDisplacementNode(1,1)
-			#print(displacement)
-			#print("\n\n")
+			##displacement = d.computeDisplacementNode(1,1)
+			##print(displacement)
+			##print("\n\n")
 			
-			#d.print()
-			if use_position:
-				d.compute(-1, False)
-			else:
-				d.compute(-1, False)
+			##d.print()
+			#if use_position:
+				#d.compute(-1, False)
+			#else:
+				#d.compute(-1, False)
 			
-			#for x in range(0, d.getSLAMsize()):
-				#displacement_full = d.compute(x, False)
-				#print("Full displacement at step " + str(x))
-				#print(displacement_full)
-				##d.visu(x)
-				##input("Press Enter to continue...")
+			##for x in range(0, d.getSLAMsize()):
+				##displacement_full = d.compute(x, False)
+				##print("Full displacement at step " + str(x))
+				##print(displacement_full)
+				###d.visu(x)
+				###input("Press Enter to continue...")
 			
-			#d.visu()
-			#d.printDisplacement()
-			#d.visuDisplacement()
+			##d.visu()
+			##d.printDisplacement()
+			##d.visuDisplacement()
 			
-			d.meanDisplacement()
-			d.distanceToGT()
+			#d.meanDisplacement()
+			#d.distanceToGT()
 			
-			if use_position:
-				d.exportGnuplot(el.file_out_position)
-			else:
-				d.exportGnuplot(el.file_out_orientation)
+			#if use_position:
+				#d.exportGnuplot(el.file_out_position)
+			#else:
+				#d.exportGnuplot(el.file_out_orientation)
      
      #Reduce values of gmapping now
      
 	gmapping_files = list()
+	gmapping_files_orientations = list()
 	
-	gmapping_files.append(Pair("results/displacement_gmapping_laser_position_people_long.dat", "results/displacement_fuser_pointcloud_position_offline_people_long.dat", "results/displacement_gmapping_laser_position_people_long_smaller.dat", ""))
-	gmapping_files.append(Pair("results/displacement_gmapping_laser_position_2017-08-29-15-30-59.dat", "results/displacement_fuser_pointcloud_position_offline_2017-08-29-15-30-59.dat", "results/displacement_gmapping_laser_position_2017-08-29-15-30-59_smaller.dat", ""))
-	gmapping_files.append(Pair("results/displacement_gmapping_laser_position_2017-08-29-15-37-08.dat", "results/displacement_fuser_pointcloud_position_offline_2017-08-29-15-37-08.dat", "results/displacement_gmapping_laser_position_2017-08-29-15-37-08_smaller.dat", ""))
+	######People_long - all against mpr times for meaningful comparison
+	##Gmapping laser position 
+	gmapping_files.append(Pair("results/displacement_gmapping_laser_position_people_long.dat", "results/displacement_fuser_mpr_position_offline_people_long.dat", "results/displacement_gmapping_laser_position_people_long_smaller.dat", "third_gmapping_velodyne"))
+	##Gmapping mpr position
+	gmapping_files.append(Pair("results/displacement_gmapping_mpr_position_people_long.dat", "results/displacement_fuser_mpr_position_offline_people_long.dat", "results/displacement_gmapping_mpr_position_people_long_smaller.dat", "third_gmapping_radar"))
+	##Gmapping laser orientation
+	gmapping_files_orientations.append(Pair("results/displacement_gmapping_laser_orientation_people_long.dat", "results/displacement_fuser_mpr_orientation_offline_people_long.dat", "results/displacement_gmapping_laser_orientation_people_long_smaller.dat", "third_gmapping_velodyne"))
+	##Gmapping mpr orientation
+	gmapping_files_orientations.append(Pair("results/displacement_gmapping_mpr_orientation_people_long.dat", "results/displacement_fuser_mpr_orientation_offline_people_long.dat", "results/displacement_gmapping_mpr_orientation_people_long_smaller.dat", "third_gmapping_radar"))
 	
-	gmapping_files.append(Pair("results/displacement_gmapping_mpr_position_people_long.dat", "results/displacement_fuser_mpr_position_offline_people_long.dat", "results/displacement_gmapping_mpr_position_people_long_smaller.dat", ""))
-	gmapping_files.append(Pair("results/displacement_gmapping_mpr_position_2017-08-29-15-30-59.dat", "results/displacement_fuser_mpr_position_offline_2017-08-29-15-30-59.dat", "results/displacement_gmapping_mpr_position_2017-08-29-15-30-59_smaller.dat", ""))
-	gmapping_files.append(Pair("results/displacement_gmapping_mpr_position_2017-08-29-15-37-08.dat", "results/displacement_fuser_mpr_position_offline_2017-08-29-15-37-08.dat", "results/displacement_gmapping_mpr_position_2017-08-29-15-37-08_smaller.dat", ""))
+	## Same with NDT fuser
+	##Fuser laser position 
+	gmapping_files.append(Pair("results/displacement_fuser_pointcloud_position_offline_people_long.dat", "results/displacement_fuser_mpr_position_offline_people_long.dat", "results/displacement_fuser_pointcloud_position_offline_people_long_smaller.dat", "third_fuser_velodyne"))
+	##Fuser mpr position NOT Needed DONE FOR THE EXPORT OF LATEX
+	gmapping_files.append(Pair("results/displacement_fuser_mpr_position_offline_people_long.dat", "results/displacement_fuser_mpr_position_offline_people_long.dat", "results/displacement_fuser_mpr_position_offline_people_long_smaller.dat", "third_fuser_radar"))
+	##Fuser laser orientation
+	gmapping_files_orientations.append(Pair("results/displacement_fuser_pointcloud_orientation_offline_people_long.dat", "results/displacement_fuser_mpr_orientation_offline_people_long.dat", "results/displacement_fuser_pointcloud_orientation_offline_people_long_smaller.dat", "third_fuser_velodyne"))
+	##Fuser mpr orientation NOT NEEDED
+	gmapping_files_orientations.append(Pair("results/displacement_fuser_mpr_orientation_offline_people_long.dat", "results/displacement_fuser_mpr_orientation_offline_people_long.dat", "results/displacement_fuser_mpr_orientation_offline_people_long_smaller.dat", "third_fuser_radar"))
+	
+	######30-59 - all against mpr times for meaningful comparison
+	##Gmapping laser position 
+	gmapping_files.append(Pair("results/displacement_gmapping_laser_position_2017-08-29-15-30-59.dat", "results/displacement_fuser_mpr_position_offline_2017-08-29-15-30-59.dat", "results/displacement_gmapping_laser_position_2017-08-29-15-30-59_smaller.dat", "first_gmapping_velodyne"))
+	##Gmapping mpr position
+	gmapping_files.append(Pair("results/displacement_gmapping_mpr_position_2017-08-29-15-30-59.dat", "results/displacement_fuser_mpr_position_offline_2017-08-29-15-30-59.dat", "results/displacement_gmapping_mpr_position_2017-08-29-15-30-59_smaller.dat", "first_gmapping_radar"))
+	##Gmapping laser orientation
+	gmapping_files_orientations.append(Pair("results/displacement_gmapping_laser_orientation_2017-08-29-15-30-59.dat", "results/displacement_fuser_mpr_orientation_offline_2017-08-29-15-30-59.dat", "results/displacement_gmapping_laser_orientation_2017-08-29-15-30-59_smaller.dat", "first_gmapping_velodyne"))
+	##Gmapping mpr orientation
+	gmapping_files_orientations.append(Pair("results/displacement_gmapping_mpr_orientation_2017-08-29-15-30-59.dat", "results/displacement_fuser_mpr_orientation_offline_2017-08-29-15-30-59.dat", "results/displacement_gmapping_mpr_orientation_2017-08-29-15-30-59_smaller.dat", "first_gmapping_radar"))
+	
+	## Same with NDT fuser
+	##Fuser laser position 
+	gmapping_files.append(Pair("results/displacement_fuser_pointcloud_position_offline_2017-08-29-15-30-59.dat", "results/displacement_fuser_mpr_position_offline_2017-08-29-15-30-59.dat", "results/displacement_fuser_pointcloud_position_offline_2017-08-29-15-30-59_smaller.dat", "first_fuser_velodyne"))
+	##Fuser mpr position NOT Needed
+	gmapping_files.append(Pair("results/displacement_fuser_mpr_position_offline_2017-08-29-15-30-59.dat", "results/displacement_fuser_mpr_position_offline_2017-08-29-15-30-59.dat", "results/displacement_fuser_mpr_position_offline_2017-08-29-15-30-59_smaller.dat", "first_fuser_radar"))
+	##Fuser laser orientation
+	gmapping_files_orientations.append(Pair("results/displacement_fuser_pointcloud_orientation_offline_2017-08-29-15-30-59.dat", "results/displacement_fuser_mpr_orientation_offline_2017-08-29-15-30-59.dat", "results/displacement_fuser_pointcloud_orientation_offline_2017-08-29-15-30-59_smaller.dat", "first_fuser_velodyne"))
+	##Fuser mpr orientation NOT NEEDED
+	gmapping_files_orientations.append(Pair("results/displacement_fuser_mpr_orientation_offline_2017-08-29-15-30-59.dat", "results/displacement_fuser_mpr_orientation_offline_2017-08-29-15-30-59.dat", "results/displacement_fuser_mpr_orientation_offline_2017-08-29-15-30-59_smaller.dat", "first_fuser_radar"))
+	
+	
+	######37-08 - all against mpr times for meaningful comparison
+	##Gmapping laser position 
+	gmapping_files.append(Pair("results/displacement_gmapping_laser_position_2017-08-29-15-37-08.dat", "results/displacement_fuser_mpr_position_offline_2017-08-29-15-37-08.dat", "results/displacement_gmapping_laser_position_2017-08-29-15-37-08_smaller.dat", "second_gmapping_velodyne"))
+	
+	gmapping_files.append(Pair("results/displacement_gmapping_mpr_position_2017-08-29-15-37-08.dat", "results/displacement_fuser_mpr_position_offline_2017-08-29-15-37-08.dat", "results/displacement_gmapping_mpr_position_2017-08-29-15-37-08_smaller.dat", "second_gmapping_radar"))
+	gmapping_files_orientations.append(Pair("results/displacement_gmapping_laser_orientation_2017-08-29-15-37-08.dat", "results/displacement_fuser_mpr_orientation_offline_2017-08-29-15-37-08.dat", "results/displacement_gmapping_laser_orientation_2017-08-29-15-37-08_smaller.dat", "second_gmapping_velodyne"))
+	gmapping_files_orientations.append(Pair("results/displacement_gmapping_mpr_orientation_2017-08-29-15-37-08.dat", "results/displacement_fuser_mpr_orientation_offline_2017-08-29-15-37-08.dat", "results/displacement_gmapping_mpr_orientation_2017-08-29-15-37-08_smaller.dat", "second_gmapping_radar"))
+	
+	
+	## Same with NDT fuser
+	##Fuser laser position 
+	gmapping_files.append(Pair("results/displacement_fuser_pointcloud_position_offline_2017-08-29-15-37-08.dat", "results/displacement_fuser_mpr_position_offline_2017-08-29-15-37-08.dat", "results/displacement_fuser_pointcloud_position_offline_2017-08-29-15-37-08_smaller.dat", "second_fuser_velodyne"))
+	##Fuser mpr position NOT Needed
+	gmapping_files.append(Pair("results/displacement_fuser_mpr_position_offline_2017-08-29-15-37-08.dat", "results/displacement_fuser_mpr_position_offline_2017-08-29-15-37-08.dat", "results/displacement_fuser_mpr_position_offline_2017-08-29-15-37-08_smaller.dat", "second_fuser_radar"))
+	##Fuser laser orientation
+	gmapping_files_orientations.append(Pair("results/displacement_fuser_pointcloud_orientation_offline_2017-08-29-15-37-08.dat", "results/displacement_fuser_mpr_orientation_offline_2017-08-29-15-37-08.dat", "results/displacement_fuser_pointcloud_orientation_offline_2017-08-29-15-37-08_smaller.dat", "second_fuser_velodyne"))
+	##Fuser mpr orientation NOT NEEDED
+	gmapping_files_orientations.append(Pair("results/displacement_fuser_mpr_orientation_offline_2017-08-29-15-37-08.dat", "results/displacement_fuser_mpr_orientation_offline_2017-08-29-15-37-08.dat", "results/displacement_fuser_mpr_orientation_offline_2017-08-29-15-37-08_smaller.dat", "second_fuser_radar"))
+	
+	##TODO LAST NDT
+	
+	assert len(gmapping_files_orientations) == 12
+	assert len(gmapping_files) == 12
 	
 	reduce_files_gmapping(gmapping_files, True)
-	gmapping_files = list()
-	assert len(gmapping_files) == 0
+	reduce_files_gmapping(gmapping_files_orientations, False)
 	
-	gmapping_files.append(Pair("results/displacement_gmapping_laser_orientation_people_long.dat", "results/displacement_fuser_pointcloud_orientation_offline_people_long.dat", "results/displacement_gmapping_laser_orientation_people_long_smaller.dat", ""))
-	gmapping_files.append(Pair("results/displacement_gmapping_laser_orientation_2017-08-29-15-30-59.dat", "results/displacement_fuser_pointcloud_orientation_offline_2017-08-29-15-30-59.dat", "results/displacement_gmapping_laser_orientation_2017-08-29-15-30-59_smaller.dat", ""))
-	gmapping_files.append(Pair("results/displacement_gmapping_laser_orientation_2017-08-29-15-37-08.dat", "results/displacement_fuser_pointcloud_orientation_offline_2017-08-29-15-37-08.dat", "results/displacement_gmapping_laser_orientation_2017-08-29-15-37-08_smaller.dat", ""))
-	
-	gmapping_files.append(Pair("results/displacement_gmapping_mpr_orientation_people_long.dat", "results/displacement_fuser_mpr_orientation_offline_people_long.dat", "results/displacement_gmapping_mpr_orientation_people_long_smaller.dat", ""))
-	gmapping_files.append(Pair("results/displacement_gmapping_mpr_orientation_2017-08-29-15-30-59.dat", "results/displacement_fuser_mpr_orientation_offline_2017-08-29-15-30-59.dat", "results/displacement_gmapping_mpr_orientation_2017-08-29-15-30-59_smaller.dat", ""))
-	gmapping_files.append(Pair("results/displacement_gmapping_mpr_orientation_2017-08-29-15-37-08.dat", "results/displacement_fuser_mpr_orientation_offline_2017-08-29-15-37-08.dat", "results/displacement_gmapping_mpr_orientation_2017-08-29-15-37-08_smaller.dat", ""))
-	
-	reduce_files_gmapping(gmapping_files, False)
-	
-	
+	to_latex_table("results/table_means.tex")
      
 
 if __name__ == "__main__":
