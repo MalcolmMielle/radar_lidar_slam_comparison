@@ -37,7 +37,9 @@ class Data:
 		self.is_rad = True
 		self.convert_to_rad = True
 		
-	def read(self, file_name, is_radian = True, convert_to_rad = True):
+		self.last_pose_read = Pose()
+		
+	def read(self, file_name, min_diff_in_pose = -1, is_radian = True, convert_to_rad = True):
 		f = open(file_name, 'r')
 		
 		self.is_rad = is_radian
@@ -65,8 +67,21 @@ class Data:
 				#if orientation >= 2 * math.pi :
 					#orientation = orientation - (2 * math.pi)
 			slampose = Pose(Point( float(line.split()[0]), float(line.split()[1] )), orientation)
-			self.posetime.append( (slampose, float(line.split()[3]) ) )
 			
+			
+			if(len(self.posetime) != 0):
+				if (min_diff_in_pose != -1):
+					if(slampose.getPosition().dist(self.last_pose_read.getPosition()) >= min_diff_in_pose ):
+						print(slampose.getPosition().dist(self.last_pose_read.getPosition()) , " >= ", min_diff_in_pose)
+						self.posetime.append( (slampose, float(line.split()[3]) ) )
+					else:
+						print("rejected")
+				else:
+					self.posetime.append( (slampose, float(line.split()[3]) ) )
+			else:
+				self.posetime.append( (slampose, float(line.split()[3]) ) )
+			self.last_pose_read = slampose
+				
 	def exportGnuplot(self, f):
 		#print("El number " + str(len(self.posetime)))
 		count = 0

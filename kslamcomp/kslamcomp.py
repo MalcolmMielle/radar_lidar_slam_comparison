@@ -29,6 +29,13 @@ class KSlamComp:
         self.mean_distance_gt_sd = -1
         
         self.distance_to_gt = -1
+        
+        
+        ## When removing the odometry
+        self.indexes = list()
+        #self.slam_trimmed = data.Data()
+        #self.gt_trimmed = data.Data()
+        #self.displacement_trimmmed
 
     def read(self, file_name):
         assert(len(self.slam_raw.posetime) == 0)
@@ -43,16 +50,16 @@ class KSlamComp:
             self.slam_raw.posetime.append( (slampose, float(line.split()[3]) ) )
             self.gt_raw.posetime.append( (gtpose, float(line.split()[7]) ) )
             
-    def readSLAM(self, slam_file_name, gt_file_name):
-        self.slam_raw.read(slam_file_name)
-        self.gt_raw.read(gt_file_name)
+    #def readSLAM(self, slam_file_name, gt_file_name, min_diff_in_pose = -1):
+        #self.slam_raw.read(slam_file_name, min_diff_in_pose)
+        #self.gt_raw.read(gt_file_name, min_diff_in_pose)
         #assert len(self.slam_raw.posetime) == len(self.gt_raw.posetime)
             
-    def readSLAM(self, file_name, is_radian = True, cov_rad = False):
-        self.slam_raw.read(file_name, is_radian, cov_rad)
+    def readSLAM(self, file_name, min_diff_in_pose = -1, is_radian = True, cov_rad = False):
+        self.slam_raw.read(file_name, min_diff_in_pose, is_radian, cov_rad)
             
-    def readGT(self, file_name, is_radian = True, cov_rad = False):
-        self.gt_raw.read(file_name, is_radian, cov_rad)
+    def readGT(self, file_name, min_diff_in_pose = -1, is_radian = True, cov_rad = False):
+        self.gt_raw.read(file_name, min_diff_in_pose, is_radian, cov_rad)
 
     def print(self):
         print("Printing data")
@@ -63,6 +70,39 @@ class KSlamComp:
         self.gt.print()
 
         print("\n")
+        
+        
+    def trim_odometry(self, min_dist):
+        assert len(self.slam.posetime) == len(self.gt.posetime)
+        self.indexes = list()
+        prev_dist = -1
+        for x in range(len(self.slam.posetime)):
+            pose_slam = self.slam.posetime[x][0]
+            pose_gt = self.gt.posetime[x][0] 
+            dist = pose_gt.getPosition().dist( pose_slam.getPosition() )
+            if(prev_dist == -1):
+                self.indexes.append(x)
+                prev_dist = dist
+            else:
+                if(abs(dist - prev_dist) >= min_dist):
+                    print("yes: ", dist, " - " , prev_dist , " >= ", min_dist, " at ", x)
+                    self.indexes.append(x)
+                    prev_dist = dist
+                else:
+                    print("no: ", dist, " - " , prev_dist , " >= ", min_dist, " at ", x)
+            print(x)
+        tmp_slam_list = list()
+        tmp_gt_list = list()
+        print("indexes " , len(self.indexes))
+        for el in self.indexes:
+            print(el)
+            #print("one")
+            tmp_slam_list.append(self.slam.posetime[el])
+            tmp_gt_list.append(self.gt.posetime[el])
+        self.slam.posetime = tmp_slam_list
+        self.gt.posetime = tmp_gt_list
+            
+            
             
     def printraw(self):
         print("Printing Raw data")
@@ -116,6 +156,11 @@ class KSlamComp:
         return (displacement, displacement_abs)
 
     def exportGnuplot(self, file_out):
+        
+        flag_trimmed = False
+        if len(self.indexes) > 0:
+            flag_trimmed = True
+        
         f = open(file_out, 'w')
         f.write("# SLAM - pose_x pose_y orientation time" + "\n")
         self.slam.exportGnuplot(f)
@@ -128,7 +173,10 @@ class KSlamComp:
         count = 0
         for el in self.displacement_vec:
             sum = sum + el
-            f.write(str(count) + " " + str(el)+ " " + str(sum) + "\n")
+            if(flag_trimmed == False):
+                f.write(str(count) + " " + str(el)+ " " + str(sum) + "\n")
+            else:
+                f.write(str(self.indexes[count]) + " " + str(el)+ " " + str(sum) + "\n")
             count = count + 1
             
         f.write("\n\n# Displacement abs and sum" + "\n")
@@ -136,13 +184,19 @@ class KSlamComp:
         count = 0
         for el in self.displacement_vec_abs:
             sum = sum + el
-            f.write(str(count) + " " + str(el)+ " " + str(sum) + "\n")
+            if(flag_trimmed == False):
+                f.write(str(count) + " " + str(el)+ " " + str(sum) + "\n")
+            else:
+                f.write(str(self.indexes[count]) + " " + str(el)+ " " + str(sum) + "\n")
             count = count + 1
             
         f.write("\n\n# Distance slam gt" + "\n")
         count = 0
         for el in self.distance_slam_gt:
-            f.write(str(count) + " " + str(el)+ "\n")
+            if(flag_trimmed == False):
+                f.write(str(count) + " " + str(el)+ "\n")
+            else:
+                f.write(str(self.indexes[count]) + " " + str(el)+ " " + str(sum) + "\n")
             count = count + 1
         
         f.write("\n\n# Displacement mean and std deviation" + "\n")
