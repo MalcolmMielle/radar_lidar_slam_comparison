@@ -101,8 +101,8 @@ def reduce_files_gmapping(gmapping_files, use_position):
         print("Sorted")
         
         if el.min_distance == 1:
-            ##print("TRIM")
-            kslam.trim_odometry(0.009)
+            print("TRIM")
+            kslam.trim_odometry(0.0009)
 
         kslam.compute(-1, False)
 

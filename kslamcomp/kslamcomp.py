@@ -17,7 +17,7 @@ class KSlamComp:
         self.displacement_vec = list()
         self.displacement_vec_abs = list()
         self.distance_slam_gt = list()
-        
+
         self.use_orientation = False
         self.use_translation = True
         
