@@ -32,7 +32,7 @@ class KSlamComp:
         
         
         ## When removing the odometry
-        self.indexes = list()
+        self.indexes = set()
         #self.slam_trimmed = data.Data()
         #self.gt_trimmed = data.Data()
         #self.displacement_trimmmed
@@ -72,35 +72,69 @@ class KSlamComp:
         print("\n")
         
         
-    def trim_odometry(self, min_dist):
-        assert len(self.slam.posetime) == len(self.gt.posetime)
-        self.indexes = list()
-        prev_dist = -1
-        for x in range(len(self.slam.posetime)):
-            pose_slam = self.slam.posetime[x][0]
-            pose_gt = self.gt.posetime[x][0] 
-            dist = pose_gt.getPosition().dist( pose_slam.getPosition() )
-            if(prev_dist == -1):
-                self.indexes.append(x)
-                prev_dist = dist
-            else:
-                if(abs(dist - prev_dist) >= min_dist):
-                    print("yes: ", dist, " - " , prev_dist , " >= ", min_dist, " at ", x)
-                    self.indexes.append(x)
-                    prev_dist = dist
-                else:
-                    print("no: ", dist, " - " , prev_dist , " >= ", min_dist, " at ", x)
-            print(x)
-        tmp_slam_list = list()
-        tmp_gt_list = list()
-        print("indexes " , len(self.indexes))
-        for el in self.indexes:
-            print(el)
-            #print("one")
-            tmp_slam_list.append(self.slam.posetime[el])
-            tmp_gt_list.append(self.gt.posetime[el])
-        self.slam.posetime = tmp_slam_list
-        self.gt.posetime = tmp_gt_list
+    #####BUGGY DO NOT USE
+    ###def trim_odometry(self, min_dist):
+        ###assert len(self.slam.posetime) == len(self.gt.posetime)
+        ###self.indexes = set()
+        ###prev_dist = -1
+        ###for x in range(len(self.slam.posetime)):
+            ###pose_slam = self.slam.posetime[x][0]
+            ###pose_gt = self.gt.posetime[x][0] 
+            ###dist = pose_gt.getPosition().dist( pose_slam.getPosition() )
+            ###if(prev_dist == -1):
+                ###self.indexes.add(x)
+                ###prev_dist = dist
+            ###else:
+                ###if(abs(dist - prev_dist) >= min_dist):
+                    ###print("yes at ", x ," : ", dist, " - " , prev_dist , " >= ", min_dist, " at ", x)
+                    
+                    ####pose_slam_tmp = self.slam.posetime[self.indexes[ len(self.indexes) -1 ]][0]
+                    ####pose_gt_tmp = self.gt.posetime[self.indexes[ len(self.indexes) -1 ]][0] 
+                    
+                    ####print("For: ", pose_slam.getPosition().x, " ", pose_slam.getPosition().y, " and ", pose_gt.getPosition().x, " ", pose_gt.getPosition().y, " and it was ", pose_slam_tmp.getPosition().x, " ", pose_slam_tmp.getPosition().y, " and ", pose_gt_tmp.getPosition().x, " ", pose_gt_tmp.getPosition().y)
+                    ###self.indexes.add(x)
+                    ###prev_dist = dist
+                ####else:
+                    ####print("no: ", dist, " - " , prev_dist , " >= ", min_dist, " at ", x)
+            ####print(x)
+        ###if len(self.indexes) -1 not in self.indexes:
+            ###self.indexes.add(len(self.slam.posetime) -1)
+        ###tmp_slam_list = data.Data()
+        ###tmp_gt_list = data.Data()
+        ###print("indexes " , len(self.indexes))
+        
+        #####Sort the set:
+        ###s_list = sorted(self.indexes)
+        
+        ###for el in s_list:
+            ####print(el)
+            ####print("one")
+            ###tmp_slam_list.posetime.append(self.slam.posetime[el])
+            ###tmp_gt_list.posetime.append(self.gt.posetime[el])
+            ###print("Pushing at index ", el , " : ", self.slam.posetime[el][0].getPosition().x, " ", self.slam.posetime[el][0].getPosition().y, " and ", self.gt.posetime[el][0].getPosition().x, " ", self.gt.posetime[el][0].getPosition().y)
+            ###if len(tmp_slam_list.posetime) > 1:
+                ###from_ = len(tmp_slam_list.posetime) - 1
+                ###to_ = len(tmp_slam_list.posetime) - 2
+                ###print("Pushing at index ", el , " : ", self.slam.posetime[el][0].getPosition().x, " ", self.slam.posetime[el][0].getPosition().y, " and ", self.gt.posetime[el][0].getPosition().x, " ", self.gt.posetime[el][0].getPosition().y)
+                ###transdist_slam_tmp = tmp_slam_list.getTransDisplacement(to_, from_)
+                ###transdist_gt_tmp = tmp_gt_list.getTransDisplacement(to_, from_)
+                ###print("Displacement old ", transdist_slam_tmp, " " , transdist_gt_tmp, " ", abs(transdist_gt_tmp - transdist_slam_tmp))
+                
+                ###transdist_slam = self.slam.getTransDisplacement(el -1 , el)
+                ###transdist_gt = self.gt.getTransDisplacement(el -1, el)
+                ###print("Displacement old ", transdist_slam, " " , transdist_gt, " ", abs(transdist_gt - transdist_slam))
+            
+            
+            
+            
+        ####self.slam = tmp_slam_list
+        ####self.gt = tmp_gt_list
+        
+        ###for el in self.slam.posetime:
+            ###print("Now slam: ", el[0].getPosition().x, " ", el[0].getPosition().y)
+        ###for el in self.gt.posetime:
+            ###print("Now gt: ", el[0].getPosition().x, " ", el[0].getPosition().y)
+        
             
             
             
@@ -145,7 +179,7 @@ class KSlamComp:
         for x in range(0, nb_of_pose):
             #print(x, "of", nb_of_pose)
             displacement_here = self.computeDisplacementNode(x, x, squared)
-            #print(displacement)
+            #print(displacement_here[0])
             displacement = displacement + displacement_here[0]
             displacement_abs = displacement_abs + displacement_here[1]
             self.displacement_vec.append(displacement_here[0])
@@ -154,12 +188,21 @@ class KSlamComp:
         self.compute_distance_to_gt()
         
         return (displacement, displacement_abs)
+    
+    def trim(self, min_dist):
+        count = 0
+        self.indexes = set()
+        self.indexes.add(0)
+        for el in self.distance_slam_gt:
+            if self.displacement_vec_abs[count] >= min_dist:
+                self.indexes.add(count)
+            count = count + 1
 
     def exportGnuplot(self, file_out):
         
-        flag_trimmed = False
-        if len(self.indexes) > 0:
-            flag_trimmed = True
+        trim = False
+        if len(self.indexes) != 0:
+            trim = True
         
         f = open(file_out, 'w')
         f.write("# SLAM - pose_x pose_y orientation time" + "\n")
@@ -171,12 +214,15 @@ class KSlamComp:
         f.write("\n\n# Displacement and sum" + "\n")
         sum = 0
         count = 0
+        
+        
         for el in self.displacement_vec:
             sum = sum + el
-            if(flag_trimmed == False):
+            if(trim == False):
                 f.write(str(count) + " " + str(el)+ " " + str(sum) + "\n")
             else:
-                f.write(str(self.indexes[count]) + " " + str(el)+ " " + str(sum) + "\n")
+                if count in self.indexes:
+                    f.write(str(count) + " " + str(el)+ " " + str(sum) + "\n")
             count = count + 1
             
         f.write("\n\n# Displacement abs and sum" + "\n")
@@ -184,19 +230,22 @@ class KSlamComp:
         count = 0
         for el in self.displacement_vec_abs:
             sum = sum + el
-            if(flag_trimmed == False):
+            if(trim == False):
                 f.write(str(count) + " " + str(el)+ " " + str(sum) + "\n")
             else:
-                f.write(str(self.indexes[count]) + " " + str(el)+ " " + str(sum) + "\n")
+                if count in self.indexes:
+                    #print("Push ", el, " " , min_dist)
+                    f.write(str(count) + " " + str(el)+ " " + str(sum) + "\n")
             count = count + 1
             
         f.write("\n\n# Distance slam gt" + "\n")
         count = 0
         for el in self.distance_slam_gt:
-            if(flag_trimmed == False):
+            if(trim == False):
                 f.write(str(count) + " " + str(el)+ "\n")
             else:
-                f.write(str(self.indexes[count]) + " " + str(el)+ " " + str(sum) + "\n")
+                if count in self.indexes:
+                    f.write(str(count) + " " + str(el)+ " " + str(sum) + "\n")
             count = count + 1
         
         f.write("\n\n# Displacement mean and std deviation" + "\n")
@@ -322,8 +371,21 @@ class KSlamComp:
         
         
     def meanDisplacement(self):
-        self.mean_displacement, self.std_deviation = self.meanAndStd(self.displacement_vec)
-        self.mean_displacement_abs, self.std_deviation_abs = self.meanAndStd(self.displacement_vec_abs)
+        
+        displacement_vec_tmp = self.displacement_vec
+        if len(self.indexes) != 0:
+            displacement_vec_tmp = list()
+            for el in self.indexes:
+                displacement_vec_tmp.append(self.displacement_vec[el])
+        
+        displacement_vec_abs_tmp = self.displacement_vec_abs
+        if len(self.indexes) != 0:
+            displacement_vec_abs_tmp = list()
+            for el in self.indexes:
+                displacement_vec_abs_tmp.append(self.displacement_vec_abs[el])
+        
+        self.mean_displacement, self.std_deviation = self.meanAndStd(displacement_vec_tmp)
+        self.mean_displacement_abs, self.std_deviation_abs = self.meanAndStd(displacement_vec_abs_tmp)
         assert self.mean_displacement_abs >= 0
         
 
