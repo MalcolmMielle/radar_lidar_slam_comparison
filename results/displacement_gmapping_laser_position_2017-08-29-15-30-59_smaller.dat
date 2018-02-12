@@ -221,3 +221,6 @@
 
 # Distance to GT
 0.6214946281632556
+
+# Orientation to GT
+-0.0037832981739771817

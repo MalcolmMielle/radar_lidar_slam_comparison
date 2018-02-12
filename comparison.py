@@ -9,10 +9,28 @@ import math
 distance_to_gt = dict()
 
 
+def mean_std(list_in):
+
+    round_up = lambda num : math.ceil(num * 1000) / 1000
+
+    
+    mean_displacement = 0
+    for dis in list_in:
+        mean_displacement = mean_displacement + dis
+    mean_displacement = mean_displacement / len(list_in)
+    
+    std_deviation = 0
+    xminmean = 0
+    for dis in list_in:
+        xminmean = xminmean + ( (dis - mean_displacement) * (dis - mean_displacement) )
+    xminmean = xminmean / len(list_in)
+    std_deviation = math.sqrt(xminmean)
+    return (round_up(mean_displacement), round_up(std_deviation) )
+
+
 def to_latex_table(file_name, summary_table_file):
     
-    round_up = lambda num : math.ceil(num * 1000) / 1000
-    
+    #round_up = lambda num : math.ceil(num * 1000) / 1000
     
     f = open(file_name, 'w')
     
@@ -31,36 +49,99 @@ def to_latex_table(file_name, summary_table_file):
         " & "+ str( distance_to_gt['d_third_fuser_velodyne'] ) +\
         " & "+ str( distance_to_gt['d_third_gmapping_radar'] ) +\
         " & "+ str( distance_to_gt['d_third_gmapping_velodyne'] ) + r"\\")
+    
+    f.write("\n\n")
+    
+    f.write("Angle to ground truth" +\
+        " & "+ str( distance_to_gt['o_first_fuser_radar'] ) + \
+        " & "+ str( distance_to_gt['o_first_fuser_velodyne'] ) + \
+        " & "+ str( distance_to_gt['o_first_gmapping_radar'] ) + \
+        " & "+ str( distance_to_gt['o_first_gmapping_velodyne'] ) +\
+        " & "+ str( distance_to_gt['o_second_fuser_radar'] ) + \
+        " & "+ str( distance_to_gt['o_second_fuser_velodyne'] ) +\
+        " & "+ str( distance_to_gt['o_second_gmapping_radar'] ) + \
+        " & "+ str( distance_to_gt['o_second_gmapping_velodyne'] ) +\
+        " & "+ str( distance_to_gt['o_third_fuser_radar'] ) +\
+        " & "+ str( distance_to_gt['o_third_fuser_velodyne'] ) +\
+        " & "+ str( distance_to_gt['o_third_gmapping_radar'] ) +\
+        " & "+ str( distance_to_gt['o_third_gmapping_velodyne'] ) + r"\\")
 
 
-    mean_distance_to_gt_radar_fuser = round_up( ( distance_to_gt['d_first_fuser_radar'] + distance_to_gt['d_second_fuser_radar'] + distance_to_gt['d_third_fuser_radar'] ) / 3 )
-    mean_distance_to_gt_radar_gmapping = round_up( ( distance_to_gt['d_first_gmapping_radar'] + distance_to_gt['d_second_gmapping_radar'] + distance_to_gt['d_third_gmapping_radar'] ) / 3 )
-    mean_distance_to_gt_velodyne_fuser = round_up( ( distance_to_gt['d_first_fuser_velodyne'] + distance_to_gt['d_second_fuser_velodyne'] + distance_to_gt['d_third_fuser_velodyne'] ) / 3 )
-    mean_distance_to_gt_velodyne_gmapping = round_up( ( distance_to_gt['d_first_gmapping_velodyne'] + distance_to_gt['d_second_gmapping_velodyne'] + distance_to_gt['d_third_gmapping_velodyne'] ) / 3 )
+    #mean_distance_to_gt_radar_fuser = round_up( ( distance_to_gt['d_first_fuser_radar'] + distance_to_gt['d_second_fuser_radar'] + distance_to_gt['d_third_fuser_radar'] ) / 3 )
+    #mean_distance_to_gt_radar_gmapping = round_up( ( distance_to_gt['d_first_gmapping_radar'] + distance_to_gt['d_second_gmapping_radar'] + distance_to_gt['d_third_gmapping_radar'] ) / 3 )
+    #mean_distance_to_gt_velodyne_fuser = round_up( ( distance_to_gt['d_first_fuser_velodyne'] + distance_to_gt['d_second_fuser_velodyne'] + distance_to_gt['d_third_fuser_velodyne'] ) / 3 )
+    #mean_distance_to_gt_velodyne_gmapping = round_up( ( distance_to_gt['d_first_gmapping_velodyne'] + distance_to_gt['d_second_gmapping_velodyne'] + distance_to_gt['d_third_gmapping_velodyne'] ) / 3 )
 
     f.write("\n\n")
 
     f.write("Mean displacement in position & \makecell{"+ str( distance_to_gt['dp_first_fuser_radar'] ) + r"\\$\pm$"+ str( distance_to_gt['dpsd_first_fuser_radar'] ) + "} & \makecell{"+ str( distance_to_gt['dp_first_fuser_velodyne'] ) + r"\\$\pm$"+ str( distance_to_gt['dpsd_first_fuser_velodyne'] ) + "} & \makecell{"+ str( distance_to_gt['dp_first_gmapping_radar'] ) + r"\\$\pm$"+ str( distance_to_gt['dpsd_first_gmapping_radar'] ) + "} & \makecell{"+ str( distance_to_gt['dp_first_gmapping_velodyne'] ) + r"\\$\pm$"+ str( distance_to_gt['dpsd_first_gmapping_velodyne'] ) + "} & \makecell{"+ str( distance_to_gt['dp_second_fuser_radar'] ) + r"\\$\pm$"+ str( distance_to_gt['dpsd_second_fuser_radar'] ) + "} & \makecell{"+ str( distance_to_gt['dp_second_fuser_velodyne'] ) + r"\\$\pm$"+ str( distance_to_gt['dpsd_second_fuser_velodyne'] ) + "} & \makecell{"+ str( distance_to_gt['dp_second_gmapping_radar'] ) + r"\\$\pm$"+ str( distance_to_gt['dpsd_second_gmapping_radar'] ) + "} & \makecell{"+ str( distance_to_gt['dp_second_gmapping_velodyne'] ) + r"\\$\pm$"+ str( distance_to_gt['dpsd_second_gmapping_velodyne'] ) + "} & \makecell{"+ str( distance_to_gt['dp_third_fuser_radar'] ) + r"\\$\pm$"+ str( distance_to_gt['dpsd_third_fuser_radar'] ) + "} & \makecell{"+ str( distance_to_gt['dp_third_fuser_velodyne'] ) + r"\\$\pm$"+ str( distance_to_gt['dpsd_third_fuser_velodyne'] ) + "} & \makecell{"+ str( distance_to_gt['dp_third_gmapping_radar'] ) + r"\\$\pm$"+ str( distance_to_gt['dpsd_third_gmapping_radar'] ) + "} & \makecell{"+ str( distance_to_gt['dp_third_gmapping_velodyne'] ) + r"\\$\pm$"+ str( distance_to_gt['dpsd_third_gmapping_velodyne'] ) + r"}\\")
     
-    mean_position_displacement_radar_fuser = round_up( ( distance_to_gt['dp_first_fuser_radar'] + distance_to_gt['dp_second_fuser_radar'] + distance_to_gt['dp_third_fuser_radar'] ) / 3 )
-    mean_position_displacement_radar_gmapping = round_up( ( distance_to_gt['dp_first_gmapping_radar'] + distance_to_gt['dp_second_gmapping_radar'] + distance_to_gt['dp_third_gmapping_radar'] ) / 3 )
-    mean_position_displacement_velodyne_fuser = round_up( ( distance_to_gt['dp_first_fuser_velodyne'] + distance_to_gt['dp_second_fuser_velodyne'] + distance_to_gt['dp_third_fuser_velodyne'] ) / 3 )
-    mean_position_displacement_velodyne_gmapping = round_up( ( distance_to_gt['dp_first_gmapping_velodyne'] + distance_to_gt['dp_second_gmapping_velodyne'] + distance_to_gt['dp_third_gmapping_velodyne'] ) / 3 )
+    #mean_list = list()
+    mean_list_fuser_radar = [ distance_to_gt['dp_first_fuser_radar'], distance_to_gt['dp_second_fuser_radar'], distance_to_gt['dp_third_fuser_radar'] ]
+    mean_list_gmapping_radar = [ distance_to_gt['dp_first_gmapping_radar'], distance_to_gt['dp_second_gmapping_radar'], distance_to_gt['dp_third_gmapping_radar'] ]
+    mean_list_fuser_laser = [ distance_to_gt['dp_first_fuser_velodyne'], distance_to_gt['dp_second_fuser_velodyne'], distance_to_gt['dp_third_fuser_velodyne'] ]
+    mean_list_gmapping_laser = [ distance_to_gt['dp_first_gmapping_velodyne'], distance_to_gt['dp_second_gmapping_velodyne'], distance_to_gt['dp_third_gmapping_velodyne'] ]
+    
+    assert(len(mean_list_fuser_radar) == 3)
+    assert(len(mean_list_fuser_laser) == 3)
+    assert(len(mean_list_gmapping_radar) == 3)
+    assert(len(mean_list_gmapping_laser) == 3)
+    
+    (mean_position_displacement_radar_fuser, sd_position_fuser_radar) = mean_std(mean_list_fuser_radar)
+    (mean_position_displacement_radar_gmapping, sd_position_fuser_velodyne) = mean_std(mean_list_gmapping_radar)
+    (mean_position_displacement_velodyne_fuser, sd_position_gmapping_radar) = mean_std(mean_list_fuser_laser)
+    (mean_position_displacement_velodyne_gmapping, sd_position_gmapping_velodyne) = mean_std(mean_list_gmapping_laser)
+    
+    #mean_position_displacement_radar_fuser = round_up( ( distance_to_gt['dp_first_fuser_radar'] + distance_to_gt['dp_second_fuser_radar'] + distance_to_gt['dp_third_fuser_radar'] ) / 3 )
+    #mean_position_displacement_radar_gmapping = round_up( ( distance_to_gt['dp_first_gmapping_radar'] + distance_to_gt['dp_second_gmapping_radar'] + distance_to_gt['dp_third_gmapping_radar'] ) / 3 )
+    #mean_position_displacement_velodyne_fuser = round_up( ( distance_to_gt['dp_first_fuser_velodyne'] + distance_to_gt['dp_second_fuser_velodyne'] + distance_to_gt['dp_third_fuser_velodyne'] ) / 3 )
+    #mean_position_displacement_velodyne_gmapping = round_up( ( distance_to_gt['dp_first_gmapping_velodyne'] + distance_to_gt['dp_second_gmapping_velodyne'] + distance_to_gt['dp_third_gmapping_velodyne'] ) / 3 )
     
 
     f.write("\n\n")
 
-    f.write("Mean displacement in orientation & \makecell{"+ str( distance_to_gt['do_first_fuser_radar'] ) + r"\\$\pm$"+ str( distance_to_gt['dosd_first_fuser_radar'] ) + "} & \makecell{"+ str( distance_to_gt['do_first_fuser_velodyne'] ) + r"\\$\pm$"+ str( distance_to_gt['dosd_first_fuser_velodyne'] ) + "} & \makecell{"+ str( distance_to_gt['do_first_gmapping_radar'] ) + r"\\$\pm$"+ str( distance_to_gt['dosd_first_gmapping_radar'] ) + "} & \makecell{"+ str( distance_to_gt['do_first_gmapping_velodyne'] ) + r"\\$\pm$"+ str( distance_to_gt['dosd_first_gmapping_velodyne'] ) + "} & \makecell{"+ str( distance_to_gt['do_second_fuser_radar'] ) + r"\\$\pm$"+ str( distance_to_gt['dosd_second_fuser_radar'] ) + "} & \makecell{"+ str( distance_to_gt['do_second_fuser_velodyne'] ) + r"\\$\pm$"+ str( distance_to_gt['dosd_second_fuser_velodyne'] ) + "} & \makecell{"+ str( distance_to_gt['do_second_gmapping_radar'] ) + r"\\$\pm$"+ str( distance_to_gt['dosd_second_gmapping_radar'] ) + "} & \makecell{"+ str( distance_to_gt['do_second_gmapping_velodyne'] ) + r"\\$\pm$"+ str( distance_to_gt['dosd_second_gmapping_velodyne'] ) + "} & \makecell{"+ str( distance_to_gt['do_third_fuser_radar'] ) + r"\\$\pm$"+ str( distance_to_gt['dosd_third_fuser_radar'] ) + "} & \makecell{"+ str( distance_to_gt['do_third_fuser_velodyne'] ) + r"\\$\pm$"+ str( distance_to_gt['dosd_third_fuser_velodyne'] ) + "} & \makecell{"+ str( distance_to_gt['do_third_gmapping_radar'] ) + r"\\$\pm$"+ str( distance_to_gt['dosd_third_gmapping_radar'] ) + "} & \makecell{"+ str( distance_to_gt['do_third_gmapping_velodyne'] ) + r"\\$\pm$"+ str( distance_to_gt['dosd_third_gmapping_velodyne'] ) + r"}\\")
+    f.write("Mean displacement in orientation & \makecell{"+ \
+        str( distance_to_gt['do_first_fuser_radar'] ) + r"\\$\pm$"+ str( distance_to_gt['dosd_first_fuser_radar'] ) + \
+        "} & \makecell{"+ str( distance_to_gt['do_first_fuser_velodyne'] ) + r"\\$\pm$"+ str( distance_to_gt['dosd_first_fuser_velodyne'] ) + \
+        "} & \makecell{"+ str( distance_to_gt['do_first_gmapping_radar'] ) + r"\\$\pm$"+ str( distance_to_gt['dosd_first_gmapping_radar'] ) + \
+        "} & \makecell{"+ str( distance_to_gt['do_first_gmapping_velodyne'] ) + r"\\$\pm$"+ str( distance_to_gt['dosd_first_gmapping_velodyne'] ) + \
+        "} & \makecell{"+ str( distance_to_gt['do_second_fuser_radar'] ) + r"\\$\pm$"+ str( distance_to_gt['dosd_second_fuser_radar'] ) + \
+        "} & \makecell{"+ str( distance_to_gt['do_second_fuser_velodyne'] ) + r"\\$\pm$"+ str( distance_to_gt['dosd_second_fuser_velodyne'] ) + \
+        "} & \makecell{"+ str( distance_to_gt['do_second_gmapping_radar'] ) + r"\\$\pm$"+ str( distance_to_gt['dosd_second_gmapping_radar'] ) + \
+        "} & \makecell{"+ str( distance_to_gt['do_second_gmapping_velodyne'] ) + r"\\$\pm$"+ str( distance_to_gt['dosd_second_gmapping_velodyne'] ) + \
+        "} & \makecell{"+ str( distance_to_gt['do_third_fuser_radar'] ) + r"\\$\pm$"+ str( distance_to_gt['dosd_third_fuser_radar'] ) + \
+        "} & \makecell{"+ str( distance_to_gt['do_third_fuser_velodyne'] ) + r"\\$\pm$"+ str( distance_to_gt['dosd_third_fuser_velodyne'] ) + \
+        "} & \makecell{"+ str( distance_to_gt['do_third_gmapping_radar'] ) + r"\\$\pm$"+ str( distance_to_gt['dosd_third_gmapping_radar'] ) + \
+        "} & \makecell{"+ str( distance_to_gt['do_third_gmapping_velodyne'] ) + r"\\$\pm$"+ str( distance_to_gt['dosd_third_gmapping_velodyne'] ) + r"}\\")
     
-    mean_orientation_displacement_radar_fuser = round_up( ( distance_to_gt['do_first_fuser_radar'] + distance_to_gt['do_second_fuser_radar'] + distance_to_gt['do_third_fuser_radar'] ) / 3 )
-    mean_orientation_displacement_radar_gmapping = round_up( ( distance_to_gt['do_first_gmapping_radar'] + distance_to_gt['do_second_gmapping_radar'] + distance_to_gt['do_third_gmapping_radar'] ) / 3 )
-    mean_orientation_displacement_velodyne_fuser = round_up( ( distance_to_gt['do_first_fuser_velodyne'] + distance_to_gt['do_second_fuser_velodyne'] + distance_to_gt['do_third_fuser_velodyne'] ) / 3 )
-    mean_orientation_displacement_velodyne_gmapping = round_up( ( distance_to_gt['do_first_gmapping_velodyne'] + distance_to_gt['do_second_gmapping_velodyne'] + distance_to_gt['do_third_gmapping_velodyne'] ) / 3 )
+    
+    mean_list_fuser_radar_or = [ distance_to_gt['do_first_fuser_radar'], distance_to_gt['do_second_fuser_radar'], distance_to_gt['do_third_fuser_radar'] ]
+    mean_list_gmapping_radar_or = [ distance_to_gt['do_first_gmapping_radar'], distance_to_gt['do_second_gmapping_radar'], distance_to_gt['do_third_gmapping_radar'] ]
+    mean_list_fuser_laser_or = [ distance_to_gt['do_first_fuser_velodyne'], distance_to_gt['do_second_fuser_velodyne'], distance_to_gt['do_third_fuser_velodyne'] ]
+    mean_list_gmapping_laser_or = [ distance_to_gt['do_first_gmapping_velodyne'], distance_to_gt['do_second_gmapping_velodyne'], distance_to_gt['do_third_gmapping_velodyne'] ]
+    
+    
+    assert(len(mean_list_fuser_radar_or) == 3)
+    assert(len(mean_list_fuser_laser_or) == 3)
+    assert(len(mean_list_gmapping_radar_or) == 3)
+    assert(len(mean_list_gmapping_laser_or) == 3)
+    
+    (mean_orientation_displacement_radar_fuser, sd_orientation_fuser_radar) = mean_std(mean_list_fuser_radar_or)
+    (mean_orientation_displacement_radar_gmapping, sd_orientation_fuser_velodyne) = mean_std(mean_list_gmapping_radar_or)
+    (mean_orientation_displacement_velodyne_fuser, sd_orientation_gmapping_radar) = mean_std(mean_list_fuser_laser_or)
+    (mean_orientation_displacement_velodyne_gmapping, sd_orientation_gmapping_velodyne) = mean_std(mean_list_gmapping_laser_or)
+    
+    
+    
+    #mean_orientation_displacement_radar_fuser = round_up( ( distance_to_gt['do_first_fuser_radar'] + distance_to_gt['do_second_fuser_radar'] + distance_to_gt['do_third_fuser_radar'] ) / 3 )
+    #mean_orientation_displacement_radar_gmapping = round_up( ( distance_to_gt['do_first_gmapping_radar'] + distance_to_gt['do_second_gmapping_radar'] + distance_to_gt['do_third_gmapping_radar'] ) / 3 )
+    #mean_orientation_displacement_velodyne_fuser = round_up( ( distance_to_gt['do_first_fuser_velodyne'] + distance_to_gt['do_second_fuser_velodyne'] + distance_to_gt['do_third_fuser_velodyne'] ) / 3 )
+    #mean_orientation_displacement_velodyne_gmapping = round_up( ( distance_to_gt['do_first_gmapping_velodyne'] + distance_to_gt['do_second_gmapping_velodyne'] + distance_to_gt['do_third_gmapping_velodyne'] ) / 3 )
 
 
     f.write("\n\n")
 
-    f.write("Mean distance to gt & \makecell{"+ str( distance_to_gt['dgt_first_fuser_radar'] ) + r"\\$\pm$"+ str( distance_to_gt['dgtsd_first_fuser_radar'] ) + "} & \makecell{"+ str( distance_to_gt['dgt_first_fuser_velodyne'] ) + r"\\$\pm$"+ str( distance_to_gt['dgtsd_first_fuser_velodyne'] ) + "} & \makecell{"+ str( distance_to_gt['dgt_first_gmapping_radar'] ) + r"\\$\pm$"+ str( distance_to_gt['dgtsd_first_gmapping_radar'] ) + "} & \makecell{"+ str( distance_to_gt['dgt_first_gmapping_velodyne'] ) + r"\\$\pm$"+ str( distance_to_gt['dgtsd_first_gmapping_velodyne'] ) + "} & \makecell{"+ str( distance_to_gt['dgt_second_fuser_radar'] ) + r"\\$\pm$"+ str( distance_to_gt['dgtsd_second_fuser_radar'] ) + "} & \makecell{"+ str( distance_to_gt['dgt_second_fuser_velodyne'] ) + r"\\$\pm$"+ str( distance_to_gt['dgtsd_second_fuser_velodyne'] ) + "} & \makecell{"+ str( distance_to_gt['dgt_second_gmapping_radar'] ) + r"\\$\pm$"+ str( distance_to_gt['dgtsd_second_gmapping_radar'] ) + "} & \makecell{"+ str( distance_to_gt['dgt_second_gmapping_velodyne'] ) + r"\\$\pm$"+ str( distance_to_gt['dgtsd_second_gmapping_velodyne'] ) + "} & \makecell{"+ str( distance_to_gt['dgt_third_fuser_radar'] ) + r"\\$\pm$"+ str( distance_to_gt['dgtsd_third_fuser_radar'] ) + "} & \makecell{"+ str( distance_to_gt['dgt_third_fuser_velodyne'] ) + r"\\$\pm$"+ str( distance_to_gt['dgtsd_third_fuser_velodyne'] ) + "} & \makecell{"+ str( distance_to_gt['dgt_third_gmapping_radar'] ) + r"\\$\pm$"+ str( distance_to_gt['dgtsd_third_gmapping_radar'] ) + "} & \makecell{"+ str( distance_to_gt['dgt_third_gmapping_velodyne'] ) + r"\\$\pm$"+ str( distance_to_gt['dgtsd_third_gmapping_velodyne'] ) + r"}\\")
+    #f.write("Mean distance to gt & \makecell{"+ str( distance_to_gt['dgt_first_fuser_radar'] ) + r"\\$\pm$"+ str( distance_to_gt['dgtsd_first_fuser_radar'] ) + "} & \makecell{"+ str( distance_to_gt['dgt_first_fuser_velodyne'] ) + r"\\$\pm$"+ str( distance_to_gt['dgtsd_first_fuser_velodyne'] ) + "} & \makecell{"+ str( distance_to_gt['dgt_first_gmapping_radar'] ) + r"\\$\pm$"+ str( distance_to_gt['dgtsd_first_gmapping_radar'] ) + "} & \makecell{"+ str( distance_to_gt['dgt_first_gmapping_velodyne'] ) + r"\\$\pm$"+ str( distance_to_gt['dgtsd_first_gmapping_velodyne'] ) + "} & \makecell{"+ str( distance_to_gt['dgt_second_fuser_radar'] ) + r"\\$\pm$"+ str( distance_to_gt['dgtsd_second_fuser_radar'] ) + "} & \makecell{"+ str( distance_to_gt['dgt_second_fuser_velodyne'] ) + r"\\$\pm$"+ str( distance_to_gt['dgtsd_second_fuser_velodyne'] ) + "} & \makecell{"+ str( distance_to_gt['dgt_second_gmapping_radar'] ) + r"\\$\pm$"+ str( distance_to_gt['dgtsd_second_gmapping_radar'] ) + "} & \makecell{"+ str( distance_to_gt['dgt_second_gmapping_velodyne'] ) + r"\\$\pm$"+ str( distance_to_gt['dgtsd_second_gmapping_velodyne'] ) + "} & \makecell{"+ str( distance_to_gt['dgt_third_fuser_radar'] ) + r"\\$\pm$"+ str( distance_to_gt['dgtsd_third_fuser_radar'] ) + "} & \makecell{"+ str( distance_to_gt['dgt_third_fuser_velodyne'] ) + r"\\$\pm$"+ str( distance_to_gt['dgtsd_third_fuser_velodyne'] ) + "} & \makecell{"+ str( distance_to_gt['dgt_third_gmapping_radar'] ) + r"\\$\pm$"+ str( distance_to_gt['dgtsd_third_gmapping_radar'] ) + "} & \makecell{"+ str( distance_to_gt['dgt_third_gmapping_velodyne'] ) + r"\\$\pm$"+ str( distance_to_gt['dgtsd_third_gmapping_velodyne'] ) + r"}\\")
 
     f.close()
     
@@ -70,9 +151,17 @@ def to_latex_table(file_name, summary_table_file):
     
     #f_summary.write("Mean distance to gt & " + str(mean_distance_to_gt_radar_fuser) + " & " + str(mean_distance_to_gt_velodyne_fuser) + " & " + str(mean_distance_to_gt_radar_gmapping) + " & " + str(mean_distance_to_gt_velodyne_gmapping) + r"\\")
     #f_summary.write("\n\n")
-    f_summary.write("Mean displacement in position & " + str(mean_position_displacement_radar_fuser) + " & " + str(mean_position_displacement_velodyne_fuser) + " & " + str(mean_position_displacement_radar_gmapping) + " & " + str(mean_position_displacement_velodyne_gmapping) + r"\\")
+    f_summary.write("Mean displacement in position & \makecell{" + \
+        str(mean_position_displacement_radar_fuser) + r"\\$\pm$"+ str(sd_position_fuser_radar) + "} & \makecell{"+ \
+        str(mean_position_displacement_velodyne_fuser) + r"\\$\pm$"+ str(sd_position_fuser_velodyne) + "} & \makecell{"+\
+        str(mean_position_displacement_radar_gmapping) + r"\\$\pm$"+ str(sd_position_gmapping_radar) + "} & \makecell{"+\
+        str(mean_position_displacement_velodyne_gmapping) + r"\\$\pm$"+ str(sd_position_gmapping_velodyne) + r"}\\")
     f_summary.write("\n\n")
-    f_summary.write("Mean displacement in orientation & " + str(mean_orientation_displacement_radar_fuser) + " & " + str(mean_orientation_displacement_velodyne_fuser) + " & " + str(mean_orientation_displacement_radar_gmapping) + " & " + str(mean_orientation_displacement_velodyne_gmapping) + r"\\")
+    f_summary.write("Mean displacement in orientation & \makecell{" + \
+        str(mean_orientation_displacement_radar_fuser) + r"\\$\pm$"+ str(sd_orientation_fuser_radar) + "} & \makecell{"+ \
+        str(mean_orientation_displacement_velodyne_fuser) + r"\\$\pm$"+ str(sd_orientation_fuser_velodyne) + "} & \makecell{"+\
+        str(mean_orientation_displacement_radar_gmapping) + r"\\$\pm$"+ str(sd_orientation_gmapping_radar) + "} & \makecell{"+\
+        str(mean_orientation_displacement_velodyne_gmapping) + r"\\$\pm$"+ str(sd_orientation_gmapping_velodyne) + r"}\\")
     
     f_summary.close()
     

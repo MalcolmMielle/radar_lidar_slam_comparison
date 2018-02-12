@@ -29,6 +29,7 @@ class KSlamComp:
         self.mean_distance_gt_sd = -1
         
         self.distance_to_gt = -1
+        self.orientation_to_gt = -1
         
         
         ## When removing the odometry
@@ -257,6 +258,9 @@ class KSlamComp:
         f.write("\n\n# Distance to GT" + "\n")
         f.write(str(self.distance_to_gt) )
         
+        f.write("\n\n# Orientation to GT" + "\n")
+        f.write(str(self.orientation_to_gt) )
+        
         f.close()
         
     def add_to_dictionnary(self, suffix, dict):
@@ -265,6 +269,8 @@ class KSlamComp:
         
         name = "d_" + suffix 
         dict[name] = round_up(self.distance_to_gt)
+        name = "o_" + suffix 
+        dict[name] = round_up(self.orientation_to_gt)
         if self.use_translation == True:
             name = "dp_" + suffix 
             dict[name] = round_up(self.mean_displacement_abs)
@@ -346,6 +352,7 @@ class KSlamComp:
         last_pose_gt = self.gt.posetime[len(self.gt.posetime) - 1][0]
         self.distance_to_gt = last_pose_gt.getPosition().dist( last_pose_slam.getPosition() )
         self.mean_distance_gt, self.mean_distance_gt_sd = self.meanAndStd(self.distance_slam_gt)
+        self.orientation_to_gt = data.smallestSignedAngleBetweenRad(last_pose_slam.getOrientation(), last_pose_gt.getOrientation())
 
     def compute_distance_to_gt(self):
         assert len(self.slam.posetime) == len(self.gt.posetime)

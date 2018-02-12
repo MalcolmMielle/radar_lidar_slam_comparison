@@ -3,6 +3,17 @@
 import sys
 import math
 
+
+def smallestSignedAngleBetweenRad(x, y):
+    a = (x - y) % 2 * math.pi
+    b = (y - x) % 2 * math.pi
+    return -a if a < b else b
+
+def smallestSignedAngleBetweenDeg(x, y):
+    a = (x - y) % 360
+    b = (y - x) % 360
+    return -a if a < b else b
+
 class Point:
 	def __init__(self, x = 0, y = 0):
 		self.x = x
@@ -104,22 +115,13 @@ class Data:
 		#print("dist " , dist, "position ", self.posetime[i][0].print(), " ", self.posetime[j][0].print())
 		return dist
 	
-	def smallestSignedAngleBetweenRad(self, x, y):
-		a = (x - y) % 2 * math.pi
-		b = (y - x) % 2 * math.pi
-		return -a if a < b else b
-	
-	def smallestSignedAngleBetweenDeg(self, x, y):
-		a = (x - y) % 360
-		b = (y - x) % 360
-		return -a if a < b else b
 	
 	#From i toward j
 	def getOrientationDisplacement(self, from_i, toward_j):
 		if self.is_rad == True:
-			return self.smallestSignedAngleBetweenRad(self.posetime[from_i][0].getOrientation(), self.posetime[toward_j][0].getOrientation());
+			return smallestSignedAngleBetweenRad(self.posetime[from_i][0].getOrientation(), self.posetime[toward_j][0].getOrientation());
 		else:
-			return self.smallestSignedAngleBetweenDeg(self.posetime[from_i][0].getOrientation(), self.posetime[toward_j][0].getOrientation());
+			return smallestSignedAngleBetweenDeg(self.posetime[from_i][0].getOrientation(), self.posetime[toward_j][0].getOrientation());
 		
 		#diff = self.posetime[from_i][0].getOrientation() - self.posetime[toward_j][0].getOrientation()
 		## Get the smallest angle between them
