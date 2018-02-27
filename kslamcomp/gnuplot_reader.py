@@ -11,8 +11,10 @@ class GnuplotReader:
         self.posetime_gt = data.Data()
         self.displacement = list()
         self.sum = list()
+        self.time = list()
         self.displacement_abs = list()
         self.sum_abs = list()
+        self.time_abs = list()
      
     def print(self):
         print("SLAM raw")
@@ -30,10 +32,12 @@ class GnuplotReader:
     def readDisplacement(self, line):
         self.displacement.append(float(line.split()[1]))
         self.sum.append(float(line.split()[2] ))
+        self.time.append(float(line.split()[3] ))
         
     def readDisplacementAbs(self, line):
         self.displacement_abs.append(float(line.split()[1]))
         self.sum_abs.append(float(line.split()[2] ))
+        self.time_abs.append(float(line.split()[3] ))
     
     def read(self, file_name):
         f = open(file_name, 'r')

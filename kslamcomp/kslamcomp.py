@@ -179,12 +179,15 @@ class KSlamComp:
             nb_of_pose = len(self.slam.posetime)
         for x in range(0, nb_of_pose):
             #print(x, "of", nb_of_pose)
-            displacement_here = self.computeDisplacementNode(x, x, squared)
-            #print(displacement_here[0])
-            displacement = displacement + displacement_here[0]
-            displacement_abs = displacement_abs + displacement_here[1]
-            self.displacement_vec.append(displacement_here[0])
-            self.displacement_vec_abs.append(displacement_here[1])
+            try:
+                displacement_here = self.computeDisplacementNode(x, x, squared)
+                #print(displacement_here[0])
+                displacement = displacement + displacement_here[0]
+                displacement_abs = displacement_abs + displacement_here[1]
+                self.displacement_vec.append(displacement_here[0])
+                self.displacement_vec_abs.append(displacement_here[1])
+            except:
+                print("no calculation")
             
         self.compute_distance_to_gt()
         
@@ -212,41 +215,45 @@ class KSlamComp:
         f.write("\n\n# GT - pose_x pose_y orientation time" + "\n")
         self.gt.exportGnuplot(f)
         
-        f.write("\n\n# Displacement and sum" + "\n")
+        f.write("\n\n# Displacement and sum and time" + "\n")
         sum = 0
         count = 0
         
-        
+        assert len(self.displacement_vec) == len(self.slam.posetime) - 1
         for el in self.displacement_vec:
             sum = sum + el
             if(trim == False):
-                f.write(str(count) + " " + str(el)+ " " + str(sum) + "\n")
+                f.write(str(count) + " " + str(0)+ " " + str(0)+ " " + str(self.slam.posetime[count + 1][1])  + "\n")
+                f.write(str(count) + " " + str(el)+ " " + str(sum)+ " " + str(self.slam.posetime[count + 1][1])  + "\n\n")
             else:
                 if count in self.indexes:
-                    f.write(str(count) + " " + str(el)+ " " + str(sum) + "\n")
+                    f.write(str(count) + " " + str(0)+ " " + str(0)+ " " + str(self.slam.posetime[count + 1][1])  + "\n")
+                    f.write(str(count) + " " + str(el)+ " " + str(sum)+ " " + str(self.slam.posetime[count + 1][1])  + "\n\n")
             count = count + 1
             
-        f.write("\n\n# Displacement abs and sum" + "\n")
+        f.write("\n\n# Displacement abs and sum and time" + "\n")
         sum = 0
         count = 0
         for el in self.displacement_vec_abs:
             sum = sum + el
             if(trim == False):
-                f.write(str(count) + " " + str(el)+ " " + str(sum) + "\n")
+                f.write(str(count) + " " + str(0)+ " " + str(0)+ " " + str(self.slam.posetime[count + 1][1])  + "\n")
+                f.write(str(count) + " " + str(el)+ " " + str(sum) + " " + str(self.slam.posetime[count + 1][1]) + "\n\n")
             else:
                 if count in self.indexes:
                     #print("Push ", el, " " , min_dist)
-                    f.write(str(count) + " " + str(el)+ " " + str(sum) + "\n")
+                    f.write(str(count) + " " + str(0)+ " " + str(0)+ " " + str(self.slam.posetime[count + 1][1])  + "\n")
+                    f.write(str(count) + " " + str(el)+ " " + str(sum) + " " + str(self.slam.posetime[count + 1][1]) + "\n\n")
             count = count + 1
             
-        f.write("\n\n# Distance slam gt" + "\n")
+        f.write("\n\n# Distance slam gt + time" + "\n")
         count = 0
         for el in self.distance_slam_gt:
             if(trim == False):
-                f.write(str(count) + " " + str(el)+ "\n")
+                f.write(str(count) + " " + str(el) + " " + str(self.slam.posetime[count][1]) + "\n")
             else:
                 if count in self.indexes:
-                    f.write(str(count) + " " + str(el)+ " " + str(sum) + "\n")
+                    f.write(str(count) + " " + str(el)+ " " + str(sum)+ " " + str(self.slam.posetime[count][1])  + "\n")
             count = count + 1
         
         f.write("\n\n# Displacement mean and std deviation" + "\n")
@@ -558,4 +565,4 @@ class KSlamComp:
         if nb_relative_relation != 0:
             return (displacement/nb_relative_relation, displacement_abs/nb_relative_relation)
         ## If nothing was calculated i.e. nb_relative_relation is 0, we return 0
-        return (0, 0)
+        raise ValueError('Nothing was computed')

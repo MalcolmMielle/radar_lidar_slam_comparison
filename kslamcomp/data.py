@@ -5,14 +5,14 @@ import math
 
 
 def smallestSignedAngleBetweenRad(x, y):
-    a = (x - y) % 2 * math.pi
-    b = (y - x) % 2 * math.pi
-    return -a if a < b else b
+	a = (x - y) % 2 * math.pi
+	b = (y - x) % 2 * math.pi
+	return -a if a < b else b
 
 def smallestSignedAngleBetweenDeg(x, y):
-    a = (x - y) % 360
-    b = (y - x) % 360
-    return -a if a < b else b
+	a = (x - y) % 360
+	b = (y - x) % 360
+	return -a if a < b else b
 
 class Point:
 	def __init__(self, x = 0, y = 0):
@@ -49,6 +49,12 @@ class Data:
 		self.convert_to_rad = True
 		
 		self.last_pose_read = Pose()
+		
+	def write(self, file_name):
+		f = open(file_name, 'w')
+		for el in self.posetime:
+			f.write(str(el[0].getPosition().x) + " " + str(el[0].getPosition().y) + " " + str(el[0].getOrientation()) + " " + str(el[1]) + "\n")
+
 		
 	def read(self, file_name, min_diff_in_pose = -1, is_radian = True, convert_to_rad = True):
 		f = open(file_name, 'r')
@@ -154,7 +160,7 @@ class Data:
 			pose = self.posetime[x][0]
 			pose_x.append(pose.getPosition().x)
 			pose_y.append(pose.getPosition().y)
-			size1.append(500)
+			size1.append(50)
 		plot.scatter(pose_x, pose_y, size1, color)
 		#maxmin = self.__maxXYminXY()
 		#plot.xlim(-4.0, 4.0)
