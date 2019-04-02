@@ -18,15 +18,20 @@ class Point:
 	def __init__(self, x = 0, y = 0):
 		self.x = x
 		self.y = y
+    
+	def compose(self, point):
+		#print("Compose")
+		return Point(self.x + point.x, self.y + point.y)
 		
 	#From self toward point
 	def substract(self, point):
-		return Point(point.x - self.x, point.y - self.y)
+		return Point(self.x - point.x, self.y - point.y)
 		
 	def dist(self, point):
 		vec = self.substract(point)
 		dist = (vec.x * vec.x) + (vec.y * vec.y)
-		return math.sqrt(dist)
+		return (vec, math.sqrt(dist))
+        
 	
 class Pose:
 	def __init__(self, position = Point(), ori = 0):
@@ -118,7 +123,7 @@ class Data:
 	def getTransDisplacement(self, i, j):
 		#print("position " + self.posetime[i][0].print() + " " + self.posetime[j][0].print())
 		dist = self.posetime[i][0].getPosition().dist( self.posetime[j][0].getPosition())
-		#print("dist " , dist, "position ", self.posetime[i][0].print(), " ", self.posetime[j][0].print())
+		#print("dist " , dist[0].x , "nand ",dist[0].y, " and ", dist[1], "position ", self.posetime[i][0].print(), " ", self.posetime[j][0].print())
 		return dist
 	
 	
