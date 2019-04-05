@@ -40,7 +40,7 @@ class KSlamComp:
         
         self.mean_displacement = -1
         self.std_deviation = -1
-        self.mean_displacement_2d = data.Point(0, 0)
+        self.mean_displacement_2d = data.Point(-1, -1)
         #self.std_deviation_2d = -1
         self.mean_displacement_abs = -1
         self.std_deviation_abs = -1
@@ -325,6 +325,11 @@ class KSlamComp:
             dict[name] = round_up(self.mean_displacement_abs)
             name = "dpsd_" + suffix 
             dict[name] = round_up(self.std_deviation_abs)
+            name = 'g2dx_' + suffix
+            print("ADDING ", self.mean_displacement_2d.x)
+            dict[name] = round_up(self.mean_displacement_2d.x)
+            name = 'g2dy_' + suffix
+            dict[name] = round_up(self.mean_displacement_2d.y)
         else:
             name = "do_" + suffix 
             dict[name] = round_up(self.mean_displacement_abs)
@@ -334,6 +339,8 @@ class KSlamComp:
         dict[name] = round_up(self.mean_distance_gt)
         name = "dgtsd_" + suffix
         dict[name] = round_up(self.mean_distance_gt_sd)
+        
+        
         
             
     def visuSLAM(self, nb_of_pose = -1, block = False):
@@ -452,8 +459,13 @@ class KSlamComp:
         self.mean_displacement_2d = data.Point(0, 0)
         for el in displacement_vec_2d_tmp:
             self.mean_displacement_2d = self.mean_displacement_2d.compose(el)
-        self.mean_displacement_2d.x /= len(displacement_vec_2d_tmp)
-        self.mean_displacement_2d.y /= len(displacement_vec_2d_tmp)
+        print("MEAN ", self.mean_displacement_2d.x)
+        #self.mean_displacement_2d.x /= len(displacement_vec_2d_tmp)
+        #self.mean_displacement_2d.y /= len(displacement_vec_2d_tmp)
+        
+        
+        print("MEAN x ", self.mean_displacement_2d.x)
+        print("MEAN y ", self.mean_displacement_2d.y)
         
         assert self.mean_displacement_abs >= 0
         
@@ -558,7 +570,7 @@ class KSlamComp:
                 displacement = displacement + transnoise
                 displacement_abs = displacement_abs + abs(transnoise)
                 #print("t: " , translation_pair_slam.x)
-                translation_pair_slam.substract(translation_pair_gt)
+                translation_pair_slam = translation_pair_slam.substract(translation_pair_gt)
                 translation_pair = translation_pair.compose(translation_pair_slam)
                 #print("t")
             
