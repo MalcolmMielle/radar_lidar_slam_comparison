@@ -50,6 +50,9 @@ class KSlamComp:
         self.distance_to_gt = -1
         self.orientation_to_gt = -1
         
+        self.distance_last = data.Point()
+        self.distance_last_orientation = -1
+        
         
         ## When removing the odometry
         self.indexes = set()
@@ -338,7 +341,15 @@ class KSlamComp:
         name = "dgt_" + suffix
         dict[name] = round_up(self.mean_distance_gt)
         name = "dgtsd_" + suffix
-        dict[name] = round_up(self.mean_distance_gt_sd)
+        dict[name] = round_up
+        
+        name = "dgtx_" + suffix
+        dict[name] = round_up(self.distance_last.x)
+        name = "dgty_" + suffix
+        dict[name] = round_up(self.distance_last.y)
+        
+        name = "dgto_" + suffix
+        dict[name] = round_up(self.distance_last_orientation)
         
         
         
@@ -466,6 +477,11 @@ class KSlamComp:
         
         print("MEAN x ", self.mean_displacement_2d.x)
         print("MEAN y ", self.mean_displacement_2d.y)
+        
+        
+        self.distance_last = self.slam.posetime[-1][0].getPosition().substract(self.gt.posetime[-1][0].getPosition())
+        self.distance_last_orientation = data.smallestSignedAngleBetweenRad(self.gt.posetime[-1][0].getOrientation(), self.slam.posetime[-1][0].getOrientation())
+        
         
         assert self.mean_displacement_abs >= 0
         
