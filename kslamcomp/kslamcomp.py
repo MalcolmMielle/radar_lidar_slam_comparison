@@ -227,7 +227,7 @@ class KSlamComp:
                 self.indexes.add(count)
             count = count + 1
 
-    def exportGnuplot(self, file_out):
+    def exportGnuplot(self, file_out, num_test=0):
         
         trim = False
         if len(self.indexes) != 0:
@@ -248,12 +248,12 @@ class KSlamComp:
         for el in self.displacement_vec:
             sum = sum + el
             if(trim == False):
-                f.write(str(count) + " " + str(0)+ " " + str(0)+ " " + str(self.slam.posetime[count + 1][1])  + "\n")
-                f.write(str(count) + " " + str(el)+ " " + str(sum)+ " " + str(self.slam.posetime[count + 1][1])  + "\n\n")
+                #f.write(str(count) + " " + str(0)+ " " + str(0)+ " " + str(self.slam.posetime[count + 1][1])  + "\n")
+                f.write(str(count) + " " + str(el)+ " " + str(sum)+ " " + str(self.slam.posetime[count + 1][1])  + "\n")
             else:
                 if count in self.indexes:
-                    f.write(str(count) + " " + str(0)+ " " + str(0)+ " " + str(self.slam.posetime[count + 1][1])  + "\n")
-                    f.write(str(count) + " " + str(el)+ " " + str(sum)+ " " + str(self.slam.posetime[count + 1][1])  + "\n\n")
+                    #f.write(str(count) + " " + str(0)+ " " + str(0)+ " " + str(self.slam.posetime[count + 1][1])  + "\n")
+                    f.write(str(count) + " " + str(el)+ " " + str(sum)+ " " + str(self.slam.posetime[count + 1][1])  + "\n")
             count = count + 1
             
         f.write("\n\n# Displacement abs and sum and time" + "\n")
@@ -262,13 +262,13 @@ class KSlamComp:
         for el in self.displacement_vec_abs:
             sum = sum + el
             if(trim == False):
-                f.write(str(count) + " " + str(0)+ " " + str(0)+ " " + str(self.slam.posetime[count + 1][1])  + "\n")
-                f.write(str(count) + " " + str(el)+ " " + str(sum) + " " + str(self.slam.posetime[count + 1][1]) + "\n\n")
+                #f.write(str(count) + " " + str(0)+ " " + str(0)+ " " + str(self.slam.posetime[count + 1][1])  + "\n")
+                f.write(str(count) + " " + str(el)+ " " + str(sum) + " " + str(self.slam.posetime[count + 1][1]) + " " + num_test + "\n")
             else:
                 if count in self.indexes:
                     #print("Push ", el, " " , min_dist)
-                    f.write(str(count) + " " + str(0)+ " " + str(0)+ " " + str(self.slam.posetime[count + 1][1])  + "\n")
-                    f.write(str(count) + " " + str(el)+ " " + str(sum) + " " + str(self.slam.posetime[count + 1][1]) + "\n\n")
+                    #f.write(str(count) + " " + str(0)+ " " + str(0)+ " " + str(self.slam.posetime[count + 1][1])  + "\n")
+                    f.write(str(count) + " " + str(el)+ " " + str(sum) + " " + str(self.slam.posetime[count + 1][1]) + " " + num_test+  "\n")
             count = count + 1
             
         f.write("\n\n# Distance slam gt + time" + "\n")
@@ -301,12 +301,12 @@ class KSlamComp:
         for el in self.displacement_vec_2d:
             #sum = sum + el
             if(trim == False):
-                f.write(str(count) + " " + str(0)+ " " + str(0)+ " " + str(self.slam.posetime[count + 1][1])  + "\n")
-                f.write(str(count) + " " + str(el.x)+ " " + str(el.y)+ " " + str(self.slam.posetime[count + 1][1])  + "\n\n")
+                #f.write(str(count) + " " + str(0)+ " " + str(0)+ " " + str(self.slam.posetime[count + 1][1])  + "\n")
+                f.write(str(count) + " " + str(el.x)+ " " + str(el.y)+ " " + str(self.slam.posetime[count + 1][1])  + "\n")
             else:
                 if count in self.indexes:
-                    f.write(str(count) + " " + str(0)+ " " + str(0)+ " " + str(self.slam.posetime[count + 1][1])  + "\n")
-                    f.write(str(count) + " " + str(el.x)+ " " + str(el.y)+ " " + str(self.slam.posetime[count + 1][1])  + "\n\n")
+                    #f.write(str(count) + " " + str(0)+ " " + str(0)+ " " + str(self.slam.posetime[count + 1][1])  + "\n")
+                    f.write(str(count) + " " + str(el.x)+ " " + str(el.y)+ " " + str(self.slam.posetime[count + 1][1])  + "\n")
             count = count + 1
         
         
